@@ -15,20 +15,33 @@ async function searchHotels() {
 	const countryCode = document.getElementById("countryCode").value;
 	const environment = document.getElementById("environment").value;
 
-	console.log("Checkin:", checkin, "Checkout:", checkout, "Adults", adults);
+	console.log("Search parameters:", { checkin, checkout, adults, city, countryCode, environment });
 
 	try {
 		// Make a request to your backend server
 		const response = await fetch(
 			`http://localhost:3000/search-hotels?checkin=${checkin}&checkout=${checkout}&adults=${adults}&city=${city}&countryCode=${countryCode}&environment=${environment}`
 		);
-		const rates = (await response.json()).rates;
-		console.log(rates);
-		displayRatesAndHotels(rates);
+		
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || 'Failed to fetch hotels');
+		}
 
-		document.getElementById("loader").style.display = "none";
+		const data = await response.json();
+		console.log("Received data:", data);
+
+		if (!data.rates || data.rates.length === 0) {
+			hotelsDiv.innerHTML = "<p>No hotels found for the given criteria.</p>";
+			document.getElementById("loader").style.display = "none";
+			return;
+		}
+
+		displayRatesAndHotels(data.rates);
 	} catch (error) {
 		console.error("Error fetching hotels:", error);
+		hotelsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+	} finally {
 		document.getElementById("loader").style.display = "none";
 	}
 }
@@ -104,22 +117,46 @@ async function proceedToBooking(rateId) {
 
 	// Create and append the form dynamically
 	const formHtml = `
-        <form id="bookingForm">
-            <input type="hidden" name="prebookId" value="${rateId}">
-            <label>Guest First Name:</label>
-            <input type="text" name="guestFirstName" required><br>
-            <label>Guest Last Name:</label>
-            <input type="text" name="guestLastName" required><br>
-            <label>Guest Email:</label>
-            <input type="email" name="guestEmail" required><br><br>
-            <label>Credit Card Holder Name:</label>
-            <input type="text" name="holderName" required><br>
-			<label>Voucher Code:</label>
-            <input type="text" name="voucher"><br>
-            <input type="submit" value="Book Now">
-        </form>
-    `;
-	hotelsDiv.innerHTML = formHtml; // Insert the form into the 'hotels' div
+    <div class="booking-form-container">
+      <h2>Complete Your Booking</h2>
+      <form id="bookingForm" class="booking-form">
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-user"></i> Guest Information
+          </div>
+          <label>
+            First Name
+            <input type="text" name="guestFirstName" required placeholder="Enter your first name">
+          </label>
+          <label>
+            Last Name
+            <input type="text" name="guestLastName" required placeholder="Enter your last name">
+          </label>
+          <label>
+            Email Address
+            <input type="email" name="guestEmail" required placeholder="Enter your email">
+          </label>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-credit-card"></i> Payment Details
+          </div>
+          <label>
+            Cardholder Name
+            <input type="text" name="holderName" required placeholder="Name on card">
+          </label>
+          <label>
+            Voucher Code (Optional)
+            <input type="text" name="voucher" placeholder="Enter voucher code if you have one">
+          </label>
+        </div>
+
+        <input type="submit" value="Proceed to Payment">
+      </form>
+    </div>
+  `;
+	hotelsDiv.innerHTML = formHtml;
 	loader.style.display = "none";
 
 	// Add event listener to handle form submission
@@ -193,12 +230,29 @@ function displayPaymentInfo(data) {
 	const { price, currency, voucherTotalAmount } = data;
 
 	// Create content for the div
-	let content = `<p>Amount: ${price} ${currency}</p>`;
+	let content = `<div class="payment-info-container">
+		<div class="secure-label"><i class='fa-solid fa-lock'></i> Secure Payment</div>
+		<div class="amount">${price} ${currency}</div>`;
 
 	// Check if voucherTotalAmount is available and add it to the content
 	if (voucherTotalAmount && voucherTotalAmount > 0) {
-		content += `<p>Voucher Total Amount: ${voucherTotalAmount} ${currency}</p>`;
+		content += `<div class="voucher">Voucher Total Amount: ${voucherTotalAmount} ${currency}</div>`;
 	}
+
+	// Add payment methods
+	content += `
+		<div class="payment-methods">
+			<i class="fab fa-cc-visa"></i>
+			<i class="fab fa-cc-mastercard"></i>
+			<i class="fab fa-cc-amex"></i>
+			<i class="fab fa-cc-paypal"></i>
+		</div>
+		<div class="trust-badges">
+			<span><i class="fas fa-shield-alt"></i> Secure Checkout</span>
+			<span><i class="fas fa-lock"></i> SSL Encrypted</span>
+			<span><i class="fas fa-check-circle"></i> Verified Payment</span>
+		</div>
+	</div>`;
 
 	// Update the div's content
 	paymentDiv.innerHTML = content;

@@ -4,8 +4,9 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Hotel Booking</title>
+	<title>AureaVibe - Premium Hotels Worldwide</title>
 	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
@@ -40,43 +41,163 @@
 </head>
 
 <body>
-	<h1>Hotel Booking Application</h1>
-	<div id="search" class="search">
-		<div class="input-group">
-			<label for="city">Enter city name (e.g. London)</label>
-			<input type="text" class="input-bk" id="city" value="New York" />
+	<!-- New Landing Page Header -->
+	<header>
+		<nav>
+			<div class="header-logo">
+				<img src="assets/aureavibe-logo.png" alt="AureaVibe Logo" />
+				<span class="logo-text">AureaVibe</span>
+			</div>
+			<ul class="nav-links">
+				<li><a href="/">Home</a></li>
+				<li><a href="/#search">Search</a></li>
+				<li><a href="/#features">Features</a></li>
+				<li><a href="/about">About</a></li>
+				<li><a href="/contact">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<!-- Hero Section -->
+	<section class="hero">
+		<h1>Discover Your Perfect Stay</h1>
+		<p>Experience luxury and comfort with our curated selection of premium hotels worldwide</p>
+		<div class="stats">
+			<div class="stat-item">
+				<h3>10,000+</h3>
+				<p>Hotels</p>
+			</div>
+			<div class="stat-item">
+				<h3>150+</h3>
+				<p>Countries</p>
+			</div>
+			<div class="stat-item">
+				<h3>1M+</h3>
+				<p>Happy Guests</p>
+			</div>
 		</div>
-		<div class="input-group">
-			<label for="countryCode">Enter country code (e.g. UK)</label>
-			<input type="text" class="input-bk" id="countryCode" value="US" />
+		<a href="#search" class="cta-button">Start Your Search</a>
+	</section>
+
+	<!-- Original Search Section (Preserved) -->
+	<div id="search" class="container-bk">
+		<div class="search">
+			<div class="input-group">
+				<label for="city">City</label>
+				<input type="text" id="city" class="input-bk" placeholder="Enter city name (e.g. London)">
+			</div>
+			<div id="city-suggestions" class="autocomplete-suggestions"></div>
+			<div class="input-group">
+				<label for="countryCode">Country Code</label>
+				<input type="text" id="countryCode" class="input-bk" placeholder="Enter country code (e.g. UK)">
+			</div>
+			<div class="input-group">
+				<label for="checkin">Check-in Date</label>
+				<input type="date" id="checkin" class="input-bk">
+			</div>
+			<div class="input-group">
+				<label for="checkout">Check-out Date</label>
+				<input type="date" id="checkout" class="input-bk">
+			</div>
+			<div class="input-group">
+				<label for="adults">Number of Adults</label>
+				<input type="number" id="adults" class="input-bk" min="1" value="1">
+			</div>
+			<div class="input-group">
+				<label for="environment">Environment</label>
+				<select id="environment" class="input-bk">
+					<option value="sandbox">Sandbox</option>
+					<option value="production">Production</option>
+				</select>
+			</div>
+			<button onclick="searchHotels()">Search Hotels</button>
 		</div>
-		<div class="input-group">
-			<label for="checkin">Check in (YYYY-MM-DD format)</label>
-			<input type="text" class="input-bk" id="checkin" value="2025-11-20" />
+		<div id="loader" style="display: none;">
+			<p>Loading... Please wait.</p>
+			<p>Finding amazing hotels for you...</p>
 		</div>
-		<div class="input-group">
-			<label for="checkout">Check out (YYYY-MM-DD format)</label>
-			<input type="text" class="input-bk" id="checkout" value="2025-11-21" />
-		</div>
-		<div class="input-group">
-			<label for="adults">Number of adult guests staying</label>
-			<input type="text" class="input-bk" id="adults" value="1" />
-		</div>
-		<div class="input-group">
-			<label for="environment">Select Environment</label>
-			<select id="environment" class="input-bk">
-				<option value="sandbox">Sandbox</option>
-				<option value="production">Production</option>
-			</select>
-		</div>
-		<button class="price-btn mt-0" onclick="searchHotels()">Search Hotels</button>
-		<a href="details.html" class="price-btn">Look for rates for a single hotel</a>
+		<div id="hotels"></div>
+		<div id="rates"></div>
+		<div id="payment-form"></div>
+		<div id="pe"></div>
 	</div>
-	<div id="loader">Loading... Please wait.</div>
-	<div id="hotels"></div>
-	<div id="rates"></div>
-	<div id="payment-form"></div>
-	<div id="pe"></div>
+
+	<!-- Features Section -->
+	<section id="features" class="features">
+		<h2>Why Choose AureaVibe?</h2>
+		<div class="feature-grid">
+			<div class="feature-card">
+				<i class="fas fa-hotel fa-2x"></i>
+				<h3>Premium Selection</h3>
+				<p>Carefully curated hotels that meet our high standards</p>
+			</div>
+			<div class="feature-card">
+				<i class="fas fa-shield-alt fa-2x"></i>
+				<h3>Secure Booking</h3>
+				<p>Safe and secure payment processing</p>
+			</div>
+			<div class="feature-card">
+				<i class="fas fa-headset fa-2x"></i>
+				<h3>24/7 Support</h3>
+				<p>Round-the-clock customer service</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer>
+		<div class="footer-main">
+			<div class="footer-brand">
+				<div class="footer-logo-row">
+					<span class="footer-logo"><i class="fa-solid fa-gem"></i></span>
+					<span class="footer-brand-name">AureaVibe</span>
+				</div>
+				<p class="footer-desc">Compare hotel rates across multiple platforms to find the best prices. Your trusted partner for discovering premium accommodations worldwide.</p>
+				<div class="footer-social">
+					<a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+					<a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+					<a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+					<a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+				</div>
+			</div>
+			<div class="footer-links">
+				<div class="footer-section">
+					<h4>Company</h4>
+					<ul>
+						<li><a href="/about">About Us</a></li>
+						<li><a href="/careers">Careers</a></li>
+						<li><a href="/press">Press</a></li>
+					</ul>
+				</div>
+				<div class="footer-section">
+					<h4>Support</h4>
+					<ul>
+						<li><a href="/help">Help Center</a></li>
+						<li><a href="/faq">FAQ</a></li>
+						<li><a href="/contact">Contact Us</a></li>
+						<li><a href="/safety">Safety Center</a></li>
+						<li><a href="/cancellation">Cancellation Policy</a></li>
+						<li><a href="/payment">Payment Options</a></li>
+					</ul>
+				</div>
+				<div class="footer-section">
+					<h4>Legal</h4>
+					<ul>
+						<li><a href="/privacy">Privacy Policy</a></li>
+						<li><a href="/terms">Terms of Service</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom-bar">
+			<div class="footer-bottom-left">&copy; 2025 AureaVibe. All rights reserved. Your trusted hotel rate comparison platform.</div>
+			<div class="footer-bottom-right">
+				<span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Booking</span>
+				<span class="trust-badge"><i class="fa-solid fa-certificate"></i> Verified Hotels</span>
+			</div>
+		</div>
+	</footer>
+
 	<script src="app.js"></script>
 </body>
 
