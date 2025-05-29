@@ -1,5 +1,8 @@
 // Initialize the SDK with your API key
 
+// Get the base URL for API calls
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
 async function searchHotels() {
 	document.getElementById("loader").style.display = "block";
 
@@ -13,14 +16,13 @@ async function searchHotels() {
 	const adults = document.getElementById("adults").value;
 	const city = document.getElementById("city").value;
 	const countryCode = document.getElementById("countryCode").value;
-	const environment = document.getElementById("environment").value;
 
-	console.log("Search parameters:", { checkin, checkout, adults, city, countryCode, environment });
+	console.log("Search parameters:", { checkin, checkout, adults, city, countryCode });
 
 	try {
 		// Make a request to your backend server
 		const response = await fetch(
-			`http://localhost:3000/search-hotels?checkin=${checkin}&checkout=${checkout}&adults=${adults}&city=${city}&countryCode=${countryCode}&environment=${environment}`
+			`${API_URL}/api/search-hotels?checkin=${checkin}&checkout=${checkout}&adults=${adults}&city=${city}&countryCode=${countryCode}`
 		);
 		
 		if (!response.ok) {
@@ -170,12 +172,10 @@ async function proceedToBooking(rateId) {
 		const guestEmail = formData.get('guestEmail');
 		const holderName = formData.get('holderName');
 		const voucher = formData.get('voucher');
-		const environment = document.getElementById("environment").value;
 
 		try {
 			// Include additional guest details in the payment processing request
 			const bodyData = {
-				environment,
 				rateId
 			};
 
@@ -185,7 +185,7 @@ async function proceedToBooking(rateId) {
 			}
 			console.log(bodyData);
 
-			const prebookResponse = await fetch(`http://localhost:3000/prebook`, {
+			const prebookResponse = await fetch(`${API_URL}/api/prebook`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -194,12 +194,11 @@ async function proceedToBooking(rateId) {
 			});
 
 			const prebookData = await prebookResponse.json();
-			console.log("preboook successful!", prebookData.success.data)
-			// Assuming prebookData.success.data includes the necessary fields
+			console.log("preboook successful!", prebookData.success.data);
 			const paymentData = {
 				currency: prebookData.success.data.currency,
-				price: prebookData.success.data.price, // Ensure this field exists
-				voucherTotalAmount: prebookData.success.data.voucherTotalAmount // Ensure this field exists or use a default if optional
+				price: prebookData.success.data.price,
+				voucherTotalAmount: prebookData.success.data.voucherTotalAmount
 			};
 			displayPaymentInfo(paymentData);
 

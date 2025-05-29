@@ -1,5 +1,8 @@
 // Initialize hotel details search
 
+// Get the base URL for API calls
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
 async function searchHotelRate() {
     document.getElementById("loader").style.display = "block";
 
@@ -12,14 +15,13 @@ async function searchHotelRate() {
     const checkout = document.getElementById("checkout").value;
     const adults = document.getElementById("adults").value;
     const hotelId = document.getElementById("hotelId").value;
-    const environment = document.getElementById("environment").value;
 
     console.log("Checkin:", checkin, "Checkout:", checkout, "Adults", adults, "hotelId", hotelId);
 
     try {
         // Make a request to your backend server
         const response = await fetch(
-            `http://localhost:3000/search-rates?checkin=${checkin}&checkout=${checkout}&adults=${adults}&hotelId=${hotelId}`
+            `${API_URL}/api/search-rates?checkin=${checkin}&checkout=${checkout}&adults=${adults}&hotelId=${hotelId}`
         );
         const data = await response.json();
         const hotelInfo = data.hotelInfo;
@@ -164,22 +166,17 @@ async function proceedToBooking(rateId) {
         const guestEmail = formData.get('guestEmail');
         const holderName = formData.get('holderName');
         const voucher = formData.get('voucher');
-        const environment = document.getElementById("environment").value;
 
         try {
-            // Include additional guest details in the payment processing request
-
             const bodyData = {
-                environment,
                 rateId
             };
 
-            // Add voucher if it exists
             if (voucher) {
                 bodyData.voucherCode = voucher;
             }
 
-            const prebookResponse = await fetch(`http://localhost:3000/prebook`, {
+            const prebookResponse = await fetch(`${API_URL}/api/prebook`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -190,10 +187,10 @@ async function proceedToBooking(rateId) {
             const prebookData = await prebookResponse.json();
             console.log("preboook successful!", prebookData.success.data);
             const paymentData = {
-				price: prebookData.success.data.price, // Ensure this field exists
-				voucherTotalAmount: prebookData.success.data.voucherTotalAmount // Ensure this field exists or use a default if optional
-			};
-			displayPaymentInfo(paymentData);
+                price: prebookData.success.data.price,
+                voucherTotalAmount: prebookData.success.data.voucherTotalAmount
+            };
+            displayPaymentInfo(paymentData);
 
             initializePaymentForm(
                 prebookData.success.data.secretKey,

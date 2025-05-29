@@ -13,8 +13,8 @@
 	<script src="https://payment-wrapper.liteapi.travel/dist/liteAPIPayment.js?a=11"></script>
 	<script>
 		function initializePaymentForm(clientSecret, prebookId, transactionId, guestFirstName, guestLastName, guestEmail) {
-			const environment = document.getElementById("environment").value;
-			const publicKey = environment === "sandbox" ? "sandbox" : "live";
+			const environment = "production";
+			const publicKey = "live";
 
 			console.log("initializePaymentForm", publicKey);
 			liteAPIConfig = {
@@ -103,13 +103,7 @@
 				<label for="adults">Number of Adults</label>
 				<input type="number" id="adults" class="input-bk" min="1" value="1">
 			</div>
-			<div class="input-group">
-				<label for="environment">Environment</label>
-				<select id="environment" class="input-bk">
-					<option value="sandbox">Sandbox</option>
-					<option value="production">Production</option>
-				</select>
-			</div>
+			<input type="hidden" id="environment" value="production">
 			<button onclick="searchHotels()">Search Hotels</button>
 		</div>
 		<div id="loader" style="display: none;">

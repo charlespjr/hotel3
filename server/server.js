@@ -13,37 +13,33 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*",
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Serve static files from the client directory
 app.use(express.static(path.join(__dirname, '../client')));
 
-const prod_apiKey = process.env.PROD_API_KEY;
-const sandbox_apiKey = process.env.SAND_API_KEY;
+const apiKey = process.env.PROD_API_KEY;
 
-// Log API keys (without showing full values)
-console.log("API Keys configured:", {
-  sandbox: sandbox_apiKey ? "Present" : "Missing",
-  production: prod_apiKey ? "Present" : "Missing"
-});
+// Log API key status
+console.log("API Key configured:", apiKey ? "Present" : "Missing");
 
 app.use(bodyParser.json());
 
-app.get("/search-hotels", async (req, res) => {
+// Prefix all API routes with /api
+app.get("/api/search-hotels", async (req, res) => {
   console.log("Search endpoint hit");
-  const { checkin, checkout, adults, city, countryCode, environment } = req.query;
-  console.log("Search parameters:", { checkin, checkout, adults, city, countryCode, environment });
-  
-  const apiKey = environment == "sandbox" ? sandbox_apiKey : prod_apiKey;
+  const { checkin, checkout, adults, city, countryCode } = req.query;
+  console.log("Search parameters:", { checkin, checkout, adults, city, countryCode });
   
   if (!apiKey) {
-    console.error("API key missing for environment:", environment);
+    console.error("API key missing");
     return res.status(500).json({ 
-      error: "API key not configured. Please set up your SAND_API_KEY and PROD_API_KEY in the .env file" 
+      error: "API key not configured. Please set up your PROD_API_KEY in the .env file" 
     });
   }
 
@@ -105,10 +101,9 @@ app.get("/search-hotels", async (req, res) => {
   }
 });
 
-app.get("/search-rates", async (req, res) => {
+app.get("/api/search-rates", async (req, res) => {
   console.log("Rate endpoint hit");
-  const { checkin, checkout, adults, hotelId, environment } = req.query;
-  const apiKey = environment === "sandbox" ? sandbox_apiKey : prod_apiKey;
+  const { checkin, checkout, adults, hotelId } = req.query;
   const sdk = liteApi(apiKey);
 
   try {
@@ -179,10 +174,9 @@ app.get("/search-rates", async (req, res) => {
   }
 });
 
-app.post("/prebook", async (req, res) => {
+app.post("/api/prebook", async (req, res) => {
   //console.log(req.body);
-  const { rateId, environment, voucherCode } = req.body;
-  const apiKey = environment === "sandbox" ? sandbox_apiKey : prod_apiKey;
+  const { rateId, voucherCode } = req.body;
   const sdk = liteApi(apiKey);
   //console.log(apiKey, "apiKey");
   const bodyData = {
@@ -212,12 +206,11 @@ app.post("/prebook", async (req, res) => {
   }
 });
 
-app.get("/book", (req, res) => {
+app.get("/api/book", (req, res) => {
   console.log(req.query);
-  const { prebookId, guestFirstName, guestLastName, guestEmail, transactionId, environment } =
+  const { prebookId, guestFirstName, guestLastName, guestEmail, transactionId } =
     req.query;
 
-  const apiKey = environment === "sandbox" ? sandbox_apiKey : prod_apiKey;
   const sdk = liteApi(apiKey);
 
 	// Prepare the booking data
@@ -359,7 +352,7 @@ app.get("/book", (req, res) => {
 });
 
 // Serve the client-side application
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
@@ -375,35 +368,14 @@ staticPages.forEach(page => {
   });
 });
 
-const startServer = () => {
-  const ports = [3000, 3001, 3002, 3003];
-  
-  const tryPort = (index) => {
-    if (index >= ports.length) {
-      console.error('No available ports found');
-      process.exit(1);
-      return;
-    }
-    
-    const port = ports[index];
-    const server = app.listen(port)
-      .on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-          console.log(`Port ${port} is busy, trying next port...`);
-          server.close();
-          tryPort(index + 1);
-        } else {
-          console.error('Server error:', err);
-        }
-      })
-      .on('listening', () => {
-        console.log(`Server is running on port ${port}`);
-        console.log(`Open http://localhost:${port} in your browser`);
-        console.log(`Static files are being served from: ${path.join(__dirname, '../client')}`);
-      });
-  };
+// Export the app for Vercel
+module.exports = app;
 
-  tryPort(0);
-};
-
-startServer();
+// Start the server if we're not in Vercel
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Static files are being served from: ${path.join(__dirname, '../client')}`);
+  });
+}
