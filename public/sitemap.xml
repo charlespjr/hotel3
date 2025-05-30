@@ -2,111 +2,111 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main Pages -->
   <url>
-    <loc>https://aureavibe.com/</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://aureavibe.com/about.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/contact.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/about.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.aureavibe.com/contact.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aureavibe.com/blog.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Support Pages -->
   <url>
-    <loc>https://aureavibe.com/help.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.aureavibe.com/help.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/faq.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.aureavibe.com/faq.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/safety.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.aureavibe.com/safety.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/cancellation.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.aureavibe.com/cancellation.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/payment.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.aureavibe.com/payment.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Legal Pages -->
   <url>
-    <loc>https://aureavibe.com/privacy.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://www.aureavibe.com/privacy.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/terms.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://www.aureavibe.com/terms.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Blog Posts -->
   <url>
-    <loc>https://aureavibe.com/blog-are-hotel-booking-sites-reliable.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-are-hotel-booking-sites-reliable.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog-are-hotel-bookings-refundable.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-are-hotel-bookings-refundable.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog-are-hotel-booking-sites-worth-it.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-are-hotel-booking-sites-worth-it.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog-are-hotel-bookings-down.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-are-hotel-bookings-down.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog-is-hotel-booking.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-is-hotel-booking.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aureavibe.com/blog-what-are-hotel-booking-sites.html</loc>
-    <lastmod>2024-06-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://www.aureavibe.com/blog-what-are-hotel-booking-sites.html</loc>
+    <lastmod>2025-05-30</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 </urlset> 
