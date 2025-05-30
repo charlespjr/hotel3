@@ -6,6 +6,7 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 const { sendBookingConfirmation } = require('./email');
+const { generateAllArticles } = require('./blog-generator');
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -372,6 +373,20 @@ staticPages.forEach(page => {
   app.get(`/${page}`, (req, res) => {
     res.sendFile(path.join(__dirname, '../client', `${page}.html`));
   });
+});
+
+// Add this before the app.listen call
+app.post("/api/generate-blog", async (req, res) => {
+  try {
+    await generateAllArticles();
+    res.json({ success: true, message: "All blog articles and sitemap generated successfully" });
+  } catch (error) {
+    console.error("Error generating blog articles:", error);
+    res.status(500).json({ 
+      error: "Failed to generate blog articles", 
+      details: error.message 
+    });
+  }
 });
 
 // Export the app for Vercel
