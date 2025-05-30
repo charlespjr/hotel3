@@ -1,0 +1,3 @@
+User-Agent: *
+Allow: /
+Sitemap: https://aureavibe.com/sitemap.xml 
