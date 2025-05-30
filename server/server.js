@@ -351,7 +351,13 @@ app.get("/api/book", (req, res) => {
     });
 });
 
-// Serve the client-side application
+// Serve sitemap.xml with correct content type
+app.get('/sitemap.xml', (req, res) => {
+  res.type('application/xml');
+  res.sendFile(path.join(__dirname, '../client/sitemap.xml'));
+});
+
+// Catch-all route for SPA
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/index.html"));
 });
