@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
         // Add event listeners to newly added "View Details" buttons
+        /*
         if (sender === 'bot' && data && data.is_hotel_list && data.hotel_data) {
             const viewDetailsButtons = messageDiv.querySelectorAll('.view-details-button');
             viewDetailsButtons.forEach(button => {
@@ -165,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
         }
+        */
     }
 
     /**
