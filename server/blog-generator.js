@@ -8,6 +8,11 @@ const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 const blogTopics = [
   {
+    title: "Airbnb",
+    slug: "airbnb",
+    keywords: ["airbnb", "travel", "booking"]
+  },
+  {
     title: "Are Airbnbs Allowed in NYC",
     slug: "are-airbnbs-allowed-in-nyc",
     keywords: ["airbnb", "nyc", "allowed", "regulations"]
