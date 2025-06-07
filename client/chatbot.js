@@ -21,19 +21,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let conversationHistory = [];
 
     // Function to toggle chatbot window visibility
-    if (chatbotToggleButton) {
+    if (chatbotToggleButton && chatbotWindow) {
+        console.log("Chatbot toggle button and window elements found by JavaScript."); // New log
         chatbotToggleButton.addEventListener('click', () => {
+            console.log("Toggle button clicked!"); // New log
             chatbotWindow.classList.toggle('chatbot-hidden');
+            console.log("chatbot-window classes after toggle:", chatbotWindow.className); // New log
             if (!chatbotWindow.classList.contains('chatbot-hidden')) {
-                chatbotInput.focus();
+                // const chatbotInput = document.getElementById('chatbot-input'); // Already defined globally in this scope
+                if(chatbotInput) {
+                    chatbotInput.focus();
+                    console.log("Chat window opened, input focused."); // New log
+                } else {
+                    console.error("Chatbot input field not found when trying to focus."); // New log
+                }
+            } else {
+                console.log("Chat window closed."); // New log
             }
         });
+    } else {
+        console.error("Chatbot toggle button or window element NOT found in the DOM. Check IDs in index.html and chatbot.js.");
     }
 
-    if (chatbotCloseButton) {
+    if (chatbotCloseButton && chatbotWindow) {
+        console.log("Chatbot close button found by JavaScript."); // New log
         chatbotCloseButton.addEventListener('click', () => {
+            console.log("Close button clicked!"); // New log
             chatbotWindow.classList.add('chatbot-hidden');
+            console.log("chatbot-window classes after close:", chatbotWindow.className); // New log
         });
+    } else {
+        // This log was already good
+        console.error("Chatbot close button NOT found in the DOM.");
     }
 
     /**
@@ -112,23 +131,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     const btnCheckin = event.target.dataset.checkin;
                     const btnCheckout = event.target.dataset.checkout;
                     const btnAdults = event.target.dataset.adults;
+
+                    console.log(\`View Details clicked for hotelId: \${hotelId}, checkin: \${btnCheckin}, checkout: \${btnCheckout}, adults: \${btnAdults}\`); // Debug log
+
                     if (hotelId) {
-                        if (btnCheckin && btnCheckout && btnAdults) {
-                             window.location.href = \`details.html?hotelId=\${hotelId}&checkin=\${btnCheckin}&checkout=\${btnCheckout}&adults=\${btnAdults}\`;
+                        if (btnCheckin && btnCheckout && btnAdults && btnCheckin !== 'undefined' && btnCheckout !== 'undefined' && btnAdults !== 'undefined' && btnCheckin !== '' && btnCheckout !== '' && btnAdults !== '') {
+                            // All parameters from button's data attributes are valid
+                            window.location.href = \`details.html?hotelId=\${hotelId}&checkin=\${btnCheckin}&checkout=\${btnCheckout}&adults=\${btnAdults}\`;
                         } else {
-                            // Try to get from current form fields in main page as a fallback (if they exist)
-                            const mainPageCheckin = document.getElementById('checkin') ? document.getElementById('checkin').value : '';
-                            const mainPageCheckout = document.getElementById('checkout') ? document.getElementById('checkout').value : '';
-                            const mainPageAdults = document.getElementById('adults') ? document.getElementById('adults').value : '1';
+                            // Attempt to get from main page form fields as a fallback
+                            console.log("Attempting to get params from main page form for details link.");
+                            const mainPageCheckinElem = document.getElementById('checkin');
+                            const mainPageCheckoutElem = document.getElementById('checkout');
+                            const mainPageAdultsElem = document.getElementById('adults');
+
+                            const mainPageCheckin = mainPageCheckinElem ? mainPageCheckinElem.value : '';
+                            const mainPageCheckout = mainPageCheckoutElem ? mainPageCheckoutElem.value : '';
+                            const mainPageAdults = mainPageAdultsElem ? mainPageAdultsElem.value : '1';
 
                             if (mainPageCheckin && mainPageCheckout && mainPageAdults) {
+                                console.log(\`Using main page form params: \${mainPageCheckin}, \${mainPageCheckout}, \${mainPageAdults}\`);
                                 window.location.href = \`details.html?hotelId=\${hotelId}&checkin=\${mainPageCheckin}&checkout=\${mainPageCheckout}&adults=\${mainPageAdults}\`;
                             } else {
-                                alert("Could not determine all search parameters (dates, adults) to view details. Please ensure they were mentioned in the conversation or fill them on the main search form.");
-                                // Fallback or ask user to go to details page manually
+                                // Final fallback: navigate with only hotelId
+                                console.warn("Could not determine all search parameters (dates, adults) to view details. Navigating with Hotel ID only.");
+                                alert("Could not fully determine search parameters (dates, adults) from the conversation. You might need to re-enter them on the details page. Navigating with Hotel ID only.");
                                 window.location.href = \`details.html?hotelId=\${hotelId}\`;
                             }
                         }
+                    } else {
+                        console.error("View Details clicked, but hotelId is missing from button data.");
                     }
                 });
             });
