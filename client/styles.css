@@ -234,37 +234,72 @@ nav {
 	margin: 2rem auto;
 }
 
-.search-form {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 1rem;
-	background: white;
-	padding: 2rem;
-	border-radius: 10px;
-	box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+.search-card {
+	background: #fff;
+	border-radius: 18px;
+	box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10), 0 1.5px 4px rgba(44, 62, 80, 0.08);
+	padding: 32px 24px;
+	max-width: 900px;
+	margin: 0 auto 32px auto;
+	position: relative;
+	top: -60px;
+	z-index: 2;
 }
 
-.search-form input,
-.search-form select {
-	padding: 0.8rem;
-	border: 1px solid #E2E8F0;
-	border-radius: 5px;
+.search {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.input-group {
+	flex: 1 1 180px;
+	min-width: 180px;
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 0;
+}
+
+.input-group label {
 	font-size: 1rem;
+	font-weight: 500;
+	margin-bottom: 6px;
+	color: #21364b;
 }
 
-.search-button {
-	background: #2B6CB0;
+.input-bk {
+	border: 1.5px solid #d1d5db;
+	border-radius: 6px;
+	padding: 10px 14px;
+	font-size: 1rem;
+	background: #f9fafb;
+	transition: border 0.2s;
+}
+
+.input-bk:focus {
+	border-color: #2B6CB0;
+	outline: none;
+	background: #fff;
+}
+
+button {
+	background: linear-gradient(90deg, #2B6CB0 0%, #21364b 100%);
+	border-radius: 8px;
 	color: white;
-	padding: 0.8rem;
 	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-weight: bold;
-	transition: background 0.3s ease;
+	padding: 14px 28px;
+	font-size: 1.1rem;
+	font-weight: 700;
+	box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+	transition: background 0.2s, transform 0.1s;
+	margin-top: 0;
 }
 
-.search-button:hover {
-	background: #2C5282;
+button:hover {
+	background: linear-gradient(90deg, #21364b 0%, #2B6CB0 100%);
+	transform: translateY(-2px) scale(1.03);
 }
 
 /* Features Section */
@@ -1100,5 +1135,18 @@ button {
 @media (max-width: 768px) {
     .blog-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .search-card {
+        padding: 20px 8px;
+    }
+    .search {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .input-group {
+        min-width: 100%;
     }
 }

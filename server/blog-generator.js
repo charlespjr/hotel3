@@ -1,11 +1,10 @@
 const fs = require('fs').promises;
 const path = require('path');
-const { OpenAI } = require('openai');
+const fetch = require('node-fetch');
 require('dotenv').config();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 const blogTopics = [
   {
@@ -1757,23 +1756,35 @@ async function generateArticle(topic) {
   Include practical tips and advice. Make it engaging and informative.`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [
-        {
-          role: "system",
-          content: "You are a professional travel writer specializing in hotel accommodations and travel tips."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 2000
+    const response = await fetch(DEEPSEEK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          {
+            role: "system",
+            content: "You are a professional travel writer specializing in hotel accommodations and travel tips."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      })
     });
 
-    const content = completion.choices[0].message.content;
+    if (!response.ok) {
+      throw new Error(`DeepSeek API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content;
     return generateHTML(topic, content);
   } catch (error) {
     console.error(`Error generating article for ${topic.title}:`, error);

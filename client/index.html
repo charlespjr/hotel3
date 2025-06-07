@@ -83,30 +83,32 @@
 
 	<!-- Original Search Section (Preserved) -->
 	<div id="search" class="container-bk">
-		<div class="search">
-			<div class="input-group">
-				<label for="city">City</label>
-				<input type="text" id="city" class="input-bk" placeholder="Enter city name (e.g. London)">
+		<div class="search-card">
+			<div class="search">
+				<div class="input-group">
+					<label for="city">City</label>
+					<input type="text" id="city" class="input-bk" placeholder="Enter city name (e.g. London)">
+				</div>
+				<div id="city-suggestions" class="autocomplete-suggestions"></div>
+				<div class="input-group">
+					<label for="countryCode">Country Code</label>
+					<input type="text" id="countryCode" class="input-bk" placeholder="Enter country code (e.g. UK)">
+				</div>
+				<div class="input-group">
+					<label for="checkin">Check-in Date</label>
+					<input type="date" id="checkin" class="input-bk">
+				</div>
+				<div class="input-group">
+					<label for="checkout">Check-out Date</label>
+					<input type="date" id="checkout" class="input-bk">
+				</div>
+				<div class="input-group">
+					<label for="adults">Number of Adults</label>
+					<input type="number" id="adults" class="input-bk" min="1" value="1">
+				</div>
+				<input type="hidden" id="environment" value="production">
+				<button onclick="searchHotels()">Search Hotels</button>
 			</div>
-			<div id="city-suggestions" class="autocomplete-suggestions"></div>
-			<div class="input-group">
-				<label for="countryCode">Country Code</label>
-				<input type="text" id="countryCode" class="input-bk" placeholder="Enter country code (e.g. UK)">
-			</div>
-			<div class="input-group">
-				<label for="checkin">Check-in Date</label>
-				<input type="date" id="checkin" class="input-bk">
-			</div>
-			<div class="input-group">
-				<label for="checkout">Check-out Date</label>
-				<input type="date" id="checkout" class="input-bk">
-			</div>
-			<div class="input-group">
-				<label for="adults">Number of Adults</label>
-				<input type="number" id="adults" class="input-bk" min="1" value="1">
-			</div>
-			<input type="hidden" id="environment" value="production">
-			<button onclick="searchHotels()">Search Hotels</button>
 		</div>
 		<div id="loader" style="display: none;">
 			<p>Loading... Please wait.</p>
