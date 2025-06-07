@@ -1156,3 +1156,308 @@ button {
         padding: 16px 0;
     }
 }
+
+/* Chatbot Styles */
+#chatbot-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border: none; /* Overriding default button border */
+    font-size: 1rem; /* Ensure text size is appropriate */
+}
+
+#chatbot-toggle-button i {
+    margin-right: 8px;
+}
+
+#chatbot-window {
+    position: fixed;
+    bottom: 80px; /* To be above the toggle button */
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    overflow: hidden; /* To ensure border-radius clips content */
+}
+
+.chatbot-hidden {
+    display: none !important;
+}
+
+#chatbot-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chatbot-close-button {
+    background: none;
+    border: none;
+    font-size: 1.5em; /* Increased size for better clickability */
+    cursor: pointer;
+    color: #333; /* Ensure visibility */
+    padding: 0 5px; /* Add some padding */
+    line-height: 1; /* Adjust line height if necessary */
+}
+
+#chatbot-messages-container {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto; /* For scrolling messages */
+    display: flex;
+    flex-direction: column; /* So messages stack */
+    gap: 8px; /* Space between messages */
+}
+
+.chat-message {
+    padding: 8px 12px;
+    margin-bottom: 0; /* Handled by gap in container */
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.bot-message {
+    background-color: #e9e9eb;
+    color: black;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+#chatbot-input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f8f9fa; /* Light background for input area */
+}
+
+#chatbot-input {
+    flex-grow: 1;
+    padding: 10px; /* Increased padding */
+    border: 1px solid #ccc;
+    border-radius: 20px; /* More rounded input */
+    margin-right: 8px; /* Increased margin */
+    font-size: 0.95rem;
+}
+
+#chatbot-send-button {
+    padding: 10px 15px; /* Increased padding */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px; /* More rounded button */
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#chatbot-send-button i {
+    margin-right: 5px;
+}
+
+#chatbot-send-button:hover {
+    background-color: #0056b3;
+}
+
+/* Additional Chatbot Message Types */
+.bot-message.bot-typing-message { /* For the 'Thinking...' message */
+    font-style: italic;
+    color: #555;
+    background-color: #f0f0f0; /* Slightly different background for typing */
+}
+
+.bot-message.bot-error-message { /* For error messages from bot */
+    background-color: #ffdddd;
+    color: #d8000c;
+    border: 1px solid #d8000c;
+}
+
+/* Hotel Cards within Chatbot */
+.hotel-cards-container {
+    display: flex;
+    flex-direction: column; /* Stack cards vertically */
+    gap: 10px; /* Space between cards */
+    margin-top: 10px; /* Space above the first card */
+    padding-left: 5px; /* Indent card container slightly */
+    padding-right: 5px;
+}
+
+/* Ensure .hotel-card within chatbot is distinct from main page .hotel-card if any */
+#chatbot-messages-container .hotel-card {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    /* Resetting properties that might be inherited from a global .hotel-card */
+    margin: 0;
+    overflow: visible;
+    transition: none;
+    max-width: 100%; /* Ensure it fits in the chat bubble */
+}
+
+#chatbot-messages-container .hotel-card:hover {
+    transform: none; /* No hover transform for chat cards */
+}
+
+
+#chatbot-messages-container .hotel-card h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 0.95em; /* Slightly smaller for chat */
+    color: #333; /* Ensure heading color is visible */
+}
+
+#chatbot-messages-container .hotel-card p {
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    color: #555; /* Ensure text color is visible */
+}
+
+.view-details-button {
+    background-color: #28a745; /* Green color for view details */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    text-align: center;
+    display: inline-block; /* Ensure it behaves like a button */
+}
+
+.view-details-button:hover {
+    background-color: #218838;
+}
+
+/* Styles for Enhanced Hotel Details Page (details.html) */
+#hotel-image-gallery-container,
+#hotel-additional-details,
+#hotel-facilities-container,
+#hotel-reviews-section {
+    margin-top: 20px;
+    padding: 20px; /* Increased padding for better spacing */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for sections */
+}
+
+#hotel-image-gallery-container h3,
+#hotel-additional-details h4,
+#hotel-facilities-container h4,
+#hotel-reviews-section h2 {
+    color: #333;
+    margin-bottom: 15px; /* Space below section titles */
+}
+
+#hotel-image-gallery {
+    display: flex; /* Allow images to flow inline and wrap */
+    flex-wrap: wrap;
+    gap: 10px; /* Space between images */
+}
+
+#hotel-image-gallery img {
+    width: 120px;
+    height: 90px; /* Fixed height for consistency */
+    object-fit: cover; /* Ensure images cover the area well */
+    margin: 0; /* Gap is handled by the container */
+    border: 2px solid #ddd; /* Slightly more prominent border */
+    border-radius: 4px;
+    padding: 2px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+#hotel-image-gallery img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    border-color: #007bff;
+}
+
+#hotel-additional-details p {
+    margin-bottom: 8px; /* Space between paragraphs */
+    line-height: 1.6;
+}
+
+#hotel-additional-details strong {
+    color: #555;
+}
+
+#hotel-facilities-list {
+    list-style-type: disc;
+    padding-left: 25px; /* More padding for list items */
+    columns: 2; /* Display facilities in two columns if space allows */
+    column-gap: 20px;
+}
+
+#hotel-facilities-list li {
+    margin-bottom: 8px; /* Consistent spacing for list items */
+    font-size: 0.95em;
+}
+
+.hotel-review-item {
+    border-bottom: 1px solid #e0e0e0; /* Lighter border */
+    padding: 15px 0; /* More vertical padding */
+    margin-bottom: 15px;
+}
+
+.hotel-review-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.hotel-review-item h4 {
+    margin-top: 0;
+    margin-bottom: 8px; /* Increased space */
+    color: #0056b3; /* Darker blue for review titles */
+    font-size: 1.1em;
+}
+
+.review-meta {
+    font-size: 0.8em; /* Slightly smaller meta text */
+    color: #666; /* Darker grey for meta */
+    margin-bottom: 10px;
+}
+
+.hotel-review-item p {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    color: #444; /* Slightly darker text for readability */
+}
+
+.hotel-review-item p strong { /* For Pros/Cons labels */
+    color: #333;
+}
+
+/* Responsive adjustments for facilities list */
+@media (max-width: 600px) {
+    #hotel-facilities-list {
+        columns: 1; /* Single column on smaller screens */
+    }
+}
