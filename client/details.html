@@ -69,10 +69,41 @@
 	</div>
     
 	<div id="loader">Loading... Please wait.</div>
-	<div id="hotels"></div>
-	<div id="rates"></div>
-	<div id="payment-form"></div>
+	<div id="hotels">
+        <!-- Hotel basic card structure will be injected here by displayHotelDetails -->
+    </div>
+
+    <!-- New placeholder divs for enhanced hotel details -->
+    <div id="hotel-image-gallery-container">
+        <h3>Hotel Images</h3>
+        <div id="hotel-image-gallery"></div>
+    </div>
+
+    <div id="hotel-additional-details">
+        <h4>Additional Information</h4>
+        <p><strong>Star Rating:</strong> <span id="hotel-star-rating">N/A</span> stars</p>
+        <p><strong>Overall Rating:</strong> <span id="hotel-overall-rating">N/A</span> (<span id="hotel-review-count">0</span> reviews)</p>
+        <p><strong>Address:</strong> <span id="hotel-address-display">N/A</span></p>
+        <p><a id="hotel-map-link" href="#" target="_blank" style="display:none;">View on Map</a></p>
+    </div>
+
+    <div id="hotel-facilities-container">
+        <h4>Facilities</h4>
+        <ul id="hotel-facilities-list"></ul>
+    </div>
+
+	<div id="rates"></div> <!-- Rates will be displayed here -->
+
+    <div id="payment-form"></div>
 	<div id="pe"></div>
+
+    <div id="hotel-reviews-section">
+        <h2>Guest Reviews</h2>
+        <div id="hotel-reviews-container">
+            <!-- Reviews will be dynamically inserted here -->
+        </div>
+    </div>
+
     <div id="errorMessage"></div>
     <div id="paymentData"></div>
 	<script src="details.js"></script>
