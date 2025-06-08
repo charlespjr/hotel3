@@ -1,47 +1,47 @@
 // Get the base URL for API calls
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : '';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // On page load, check for URL parameters (hotelId, checkin, checkout, adults).
-    // If hotelId is present, populate input fields and automatically trigger the search.
-    // This allows linking directly to this page with pre-filled search criteria (e.g., from chatbot).
-    const urlParams = new URLSearchParams(window.location.search);
-    const hotelId = urlParams.get('hotelId');
-    const checkin = urlParams.get('checkin');
-    const checkout = urlParams.get('checkout');
-    const adults = urlParams.get('adults');
+// document.addEventListener('DOMContentLoaded', () => { // Removed
+//     // On page load, check for URL parameters (hotelId, checkin, checkout, adults).
+//     // If hotelId is present, populate input fields and automatically trigger the search.
+//     // This allows linking directly to this page with pre-filled search criteria (e.g., from chatbot).
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const hotelId = urlParams.get('hotelId');
+//     const checkin = urlParams.get('checkin');
+//     const checkout = urlParams.get('checkout');
+//     const adults = urlParams.get('adults');
 
-    if (hotelId) {
-        const hotelIdInput = document.getElementById('hotelId');
-        const checkinInput = document.getElementById('checkin');
-        const checkoutInput = document.getElementById('checkout');
-        const adultsInput = document.getElementById('adults');
+//     if (hotelId) {
+//         const hotelIdInput = document.getElementById('hotelId');
+//         const checkinInput = document.getElementById('checkin');
+//         const checkoutInput = document.getElementById('checkout');
+//         const adultsInput = document.getElementById('adults');
 
-        if (hotelIdInput) hotelIdInput.value = hotelId;
-        if (checkinInput && checkin) checkinInput.value = checkin;
-        if (checkoutInput && checkout) checkoutInput.value = checkout;
-        if (adultsInput && adults) adultsInput.value = adults;
+//         if (hotelIdInput) hotelIdInput.value = hotelId;
+//         if (checkinInput && checkin) checkinInput.value = checkin;
+//         if (checkoutInput && checkout) checkoutInput.value = checkout;
+//         if (adultsInput && adults) adultsInput.value = adults;
 
-        searchHotelRate(); // Automatically search if hotelId is in URL
-    }
-    // Any other existing event listeners or init code for details page can go here
-});
+//         searchHotelRate(); // Automatically search if hotelId is in URL
+//     }
+//     // Any other existing event listeners or init code for details page can go here
+// }); // Removed
 
 async function searchHotelRate() {
     document.getElementById("loader").style.display = "block";
     document.getElementById("errorMessage").style.display = "none"; // Hide previous errors
     document.getElementById("hotels").innerHTML = ""; // Clear previous details
     document.getElementById("rates").innerHTML = "";   // Clear previous rates
-    const reviewsContainer = document.getElementById("hotel-reviews-container");
-    if(reviewsContainer) reviewsContainer.innerHTML = ""; // Clear previous reviews
+    // const reviewsContainer = document.getElementById("hotel-reviews-container"); // Removed
+    // if(reviewsContainer) reviewsContainer.innerHTML = ""; // Removed
 
-    console.log("Searching for hotel rates and details...");
+    console.log("Searching for hotel rates and details..."); // Original log was "Searching for hotels..."
     const checkin = document.getElementById("checkin").value;
     const checkout = document.getElementById("checkout").value;
     const adults = document.getElementById("adults").value;
     const hotelId = document.getElementById("hotelId").value;
 
-    if (!hotelId) {
+    if (!hotelId) { // Added check for hotelId as it was present in original logic implicitly
          document.getElementById("loader").style.display = "none";
          document.getElementById("errorMessage").textContent = "Hotel ID is required.";
          document.getElementById("errorMessage").style.display = "block";
@@ -51,137 +51,89 @@ async function searchHotelRate() {
     console.log("Checkin:", checkin, "Checkout:", checkout, "Adults", adults, "hotelId", hotelId);
 
     try {
-        // Fetch hotel details and rates
-        const detailsResponse = await fetch(
+        // Make a request to your backend server
+        const response = await fetch(
             `${API_URL}/api/search-rates?checkin=${checkin}&checkout=${checkout}&adults=${adults}&hotelId=${hotelId}`
         );
-        if (!detailsResponse.ok) {
-            const errorData = await detailsResponse.json();
-            throw new Error(errorData.error || 'Failed to fetch hotel details and rates');
+        // Check if response is ok before parsing JSON
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' })); // Catch if error response itself is not JSON
+            throw new Error(errorData.error || `Failed to fetch hotel details and rates. Status: ${response.status}`);
         }
-        const detailsData = await detailsResponse.json();
-        const hotelInfo = detailsData.hotelInfo;
-        const rateInfo = detailsData.rateInfo;
+        const data = await response.json();
+        const hotelInfo = data.hotelInfo;
+        const rateInfo = data.rateInfo;
 
         displayHotelDetails(hotelInfo);
         displayRates(rateInfo);
 
-        // After fetching main hotel details and rates, fetch guest reviews.
-        const reviewsResponse = await fetch(`${API_URL}/api/hotel-reviews?hotelId=${hotelId}`);
-        if (reviewsResponse.ok) {
-            const reviewsData = await reviewsResponse.json();
-            displayHotelReviews(reviewsData.data);
-        } else {
-            console.warn(`Failed to fetch reviews for hotelId: ${hotelId}`);
-            if(reviewsContainer) reviewsContainer.innerHTML = "<p>Could not load reviews at this time.</p>";
-        }
-
+        // document.getElementById("loader").style.display = "none"; // Moved to finally block
     } catch (error) {
-        console.error("Error fetching hotel data:", error);
+        console.error("Error fetching hotel data:", error); // Original log was "Error fetching hotels:"
         const errorMessageDiv = document.getElementById("errorMessage");
         errorMessageDiv.style.display = "block";
-        errorMessageDiv.textContent = error.message || "No availability or error fetching data.";
+        errorMessageDiv.textContent = error.message || "No availability or error fetching data."; // Original was "No availability found"
     } finally {
          document.getElementById("loader").style.display = "none";
     }
 }
 
-/**
- * Displays the main hotel information, image gallery, and facilities.
- * @param {object} hotelInfo - The hotel details object from the API.
- */
 function displayHotelDetails(hotelInfo) {
-    const hotelsDiv = document.getElementById("hotels"); // This is where the main card goes
-    hotelsDiv.innerHTML = ''; // Clear previous content if any
+    const hotelsDiv = document.getElementById("hotels");
+    hotelsDiv.innerHTML = ''; // Clear previous content
 
     const mainImage = hotelInfo.hotelImages && hotelInfo.hotelImages.find(image => image.defaultImage === true)?.url
                       || (hotelInfo.hotelImages && hotelInfo.hotelImages?.[0]?.url)
-                      || 'https://via.placeholder.com/300x200.png?text=No+Image'; // Fallback image
+                      || 'https://via.placeholder.com/300x200.png?text=No+Image';
 
-    let hotelElementHTML = `
+    const facilitiesArray = hotelInfo.facilities || hotelInfo.hotelFacilities;
+    const facilitiesList = facilitiesArray && Array.isArray(facilitiesArray) ? facilitiesArray.slice(0, 10).map(facility =>
+        typeof facility === 'object' ? facility.name : facility
+    ).join(', ') : 'N/A';
+
+    // Added checks for hotelInfo properties before accessing them
+    const hotelName = hotelInfo.name || 'N/A';
+    const hotelAddress = hotelInfo.address || 'N/A';
+    const hotelDescription = hotelInfo.hotelDescription || 'No description available.';
+
+    const hotelElementHTML = `
       <div class='card-container'>
         <div class='card'>
           <div class='flex items-start'>
             <div class='card-image'>
-              <img src='${mainImage}' alt='${hotelInfo.name || 'Hotel image'}'>
+              <img src='${mainImage}' alt='${hotelName}'>
             </div>
             <div class='flex-between-end w-full'>
               <div>
-                <h4 class='card-title'>${hotelInfo.name || 'N/A'}</h4>
-                <p class='features'>${hotelInfo.hotelDescription || 'No description available.'}</p>
+                <h4 class='card-title'>${hotelName}</h4>
+                <h3 class='card-id'>Hotel Address: ${hotelAddress}</h3>
+                <p class='features'>${hotelDescription}</p>
+                <p class='facilities'>Facilities: ${facilitiesList}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
     `;
-    hotelsDiv.innerHTML = hotelElementHTML; // Set the basic card structure
-
-    // Populate additional details placeholders
-    const starRatingSpan = document.getElementById('hotel-star-rating');
-    const overallRatingSpan = document.getElementById('hotel-overall-rating');
-    const reviewCountSpan = document.getElementById('hotel-review-count');
-    const addressDisplaySpan = document.getElementById('hotel-address-display');
-    const mapLink = document.getElementById('hotel-map-link');
-    const facilitiesListUl = document.getElementById('hotel-facilities-list');
-    const imageGalleryDiv = document.getElementById('hotel-image-gallery');
-
-    if (starRatingSpan) starRatingSpan.textContent = hotelInfo.starRating || 'N/A';
-    if (overallRatingSpan) overallRatingSpan.textContent = hotelInfo.rating || 'N/A'; // Assuming hotelInfo.rating is overall rating
-    if (reviewCountSpan) reviewCountSpan.textContent = hotelInfo.reviewCount || '0';
-    if (addressDisplaySpan) addressDisplaySpan.textContent = hotelInfo.address || 'N/A';
-
-    if (hotelInfo.location && hotelInfo.location.latitude && hotelInfo.location.longitude) {
-        if (mapLink) {
-            mapLink.href = `https://www.google.com/maps?q=${hotelInfo.location.latitude},${hotelInfo.location.longitude}`;
-            mapLink.style.display = 'inline';
-        }
-    } else {
-        if (mapLink) mapLink.style.display = 'none';
-    }
-
-    // Display Image Gallery
-    if (imageGalleryDiv && hotelInfo.hotelImages && Array.isArray(hotelInfo.hotelImages)) {
-        imageGalleryDiv.innerHTML = ''; // Clear previous images
-        hotelInfo.hotelImages.slice(0, 5).forEach(img => { // Show up to 5 images
-            const imgElement = document.createElement('img');
-            imgElement.src = img.url;
-            imgElement.alt = img.caption || hotelInfo.name || 'Hotel Image';
-            // Basic styling for gallery, can be enhanced in CSS
-            imgElement.style.width = '100px';
-            imgElement.style.height = 'auto';
-            imgElement.style.margin = '5px';
-            imgElement.style.border = '1px solid #ddd';
-            imgElement.style.padding = '2px';
-            imageGalleryDiv.appendChild(imgElement);
-        });
-    } else if (imageGalleryDiv) {
-        imageGalleryDiv.innerHTML = '<p>No additional images available.</p>';
-    }
-
-    // Display Facilities
-    if (facilitiesListUl) {
-        facilitiesListUl.innerHTML = ''; // Clear previous facilities
-        const facilitiesArray = hotelInfo.facilities || hotelInfo.hotelFacilities; // hotelFacilities might be the correct field
-        if (facilitiesArray && Array.isArray(facilitiesArray) && facilitiesArray.length > 0) {
-            facilitiesArray.slice(0, 15).forEach(facility => { // Show up to 15 facilities
-                const li = document.createElement('li');
-                li.textContent = typeof facility === 'object' ? facility.name : facility;
-                facilitiesListUl.appendChild(li);
-            });
-        } else {
-            const li = document.createElement('li');
-            li.textContent = 'No facilities information available.';
-            facilitiesListUl.appendChild(li);
-        }
-    }
+    hotelsDiv.innerHTML = hotelElementHTML;
+    // Removed population of #hotel-star-rating, #hotel-overall-rating, etc.
+    // Removed image gallery population logic.
 }
 
 function displayRates(rateInfo) {
     const container = document.getElementById('rates');
     container.innerHTML = ''; // Clear previous content
 
-    if (!rateInfo || rateInfo.length === 0 || (rateInfo.length === 1 && rateInfo[0].length === 0) ) {
+    // Ensure rateInfo is not null and is an array before iterating
+    if (!rateInfo || !Array.isArray(rateInfo)) {
+        console.warn("rateInfo is null, not an array, or undefined. Cannot display rates.");
+        const noRatesMessage = document.createElement('p');
+        noRatesMessage.textContent = 'Rate information is currently unavailable.';
+        container.appendChild(noRatesMessage);
+        return;
+    }
+
+    if (rateInfo.length === 0 || (rateInfo.length === 1 && (!rateInfo[0] || rateInfo[0].length === 0)) ) {
         const noRatesMessage = document.createElement('p');
         noRatesMessage.textContent = 'No rates available for the selected dates/criteria.';
         container.appendChild(noRatesMessage);
@@ -228,45 +180,9 @@ function displayRates(rateInfo) {
     });
 }
 
-/**
- * Displays hotel guest reviews.
- * @param {Array<object>} reviews - Array of review objects from the API.
- */
-function displayHotelReviews(reviews) {
-    const reviewsContainer = document.getElementById('hotel-reviews-container');
-    if (!reviewsContainer) return;
-    reviewsContainer.innerHTML = ''; // Clear previous reviews
-
-    if (!reviews || reviews.length === 0) {
-        reviewsContainer.innerHTML = '<p>No reviews available for this hotel yet.</p>';
-        return;
-    }
-
-    reviews.forEach(review => {
-        const reviewDiv = document.createElement('div');
-        reviewDiv.className = 'hotel-review-item'; // For styling
-        // Ensure all fields are checked for existence before trying to access properties
-        const headline = review.headline || 'Review';
-        const averageScore = review.averageScore ? `${review.averageScore}/10` : 'N/A';
-        const name = review.name || 'Anonymous';
-        const country = review.country || 'N/A';
-        const date = review.date ? new Date(review.date).toLocaleDateString() : 'N/A';
-        const pros = review.pros ? `<p><strong>Pros:</strong> ${review.pros}</p>` : '';
-        const cons = review.cons ? `<p><strong>Cons:</strong> ${review.cons}</p>` : '';
-        // Handle cases where review text might be in headline if pros/cons are empty
-        const generalComment = (!review.pros && !review.cons && review.headline && review.text && review.headline === review.text) ? `<p>${review.text}</p>` : review.text && review.text !== review.headline ? `<p>${review.text}</p>` : '';
-
-
-        reviewDiv.innerHTML = `
-            <h4>${headline} (${averageScore})</h4>
-            <p class="review-meta">By: ${name} | Country: ${country} | Date: ${date}</p>
-            ${pros}
-            ${cons}
-            ${generalComment}
-        `;
-        reviewsContainer.appendChild(reviewDiv);
-    });
-}
+// function displayHotelReviews(reviews) { // Removed
+//     // ... content removed ...
+// }
 
 
 async function proceedToBooking(rateId) {

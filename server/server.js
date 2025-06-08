@@ -14,19 +14,6 @@ const { sendBookingConfirmation } = require('./email');
 const { generateAllArticles } = require('./blog-generator');
 const OpenAI = require('openai');
 
-// Initialize DeepSeek OpenAI client
-const deepSeekApiKey = process.env.DEEPSEEK_API_KEY;
-let openaiClient;
-if (deepSeekApiKey) {
-  openaiClient = new OpenAI({
-    apiKey: deepSeekApiKey,
-    baseURL: 'https://api.deepseek.com/v1', // Or 'https://api.deepseek.com'
-  });
-  console.log("DeepSeek OpenAI client initialized.");
-} else {
-  console.warn("DEEPSEEK_API_KEY not found in .env. DeepSeek client not initialized.");
-}
-
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -52,65 +39,74 @@ app.use(bodyParser.json());
 
 // Prefix all API routes with /api
 
-/**
- * Fetches hotel list from LITE API based on city/country,
- * then gets full rates for these hotels based on checkin, checkout, and adults.
- * @param {object} searchParams - Contains city, countryCode, checkin, checkout, adults.
- * @returns {Promise<object>} Object containing rates array or empty if not found/error.
- */
-async function fetchHotelsAndRates(searchParams) {
-  const { city, countryCode, checkin, checkout, adults } = searchParams;
-  console.log("Refactored search: Searching hotels with params:", { countryCode, city, checkin, checkout, adults });
-  const apiKey = process.env.PROD_API_KEY; // Ensure this is accessible
-  if (!apiKey) {
-    throw new Error("LITE_API_KEY (PROD_API_KEY) missing");
+app.get("/api/search-hotels", async (req, res) => {
+  console.log("Search endpoint hit"); // Or original log message
+  const { checkin, checkout, adults, city, countryCode } = req.query;
+  console.log("Search parameters:", { checkin, checkout, adults, city, countryCode });
+
+  const currentApiKey = process.env.PROD_API_KEY; // Renamed to avoid conflict with global 'apiKey' if it was used differently before.
+  if (!currentApiKey) {
+    console.error("API key missing");
+    return res.status(500).json({
+      error: "API key not configured. Please set up your PROD_API_KEY in the .env file"
+    });
   }
-  const sdk = liteApi(apiKey);
+
+  const sdk = liteApi(currentApiKey);
 
   try {
-    const hotelListResponse = await sdk.getHotels(countryCode, city, 0, 10); // Limit to 10 for now
-    if (!hotelListResponse || !hotelListResponse.data || !Array.isArray(hotelListResponse.data)) {
-      console.error("Invalid hotel list response from LITE API:", hotelListResponse);
-      return { rates: [] }; // Or throw specific error
+    console.log("Searching hotels with params:", { countryCode, city });
+    const response = await sdk.getHotels(countryCode, city, 0, 10);
+    console.log("Hotel search response:", JSON.stringify(response, null, 2));
+
+    if (!response || !response.data || !Array.isArray(response.data)) {
+      console.error("Invalid hotel response:", response);
+      return res.status(500).json({
+        error: "Invalid response from hotel search API",
+        details: response
+      });
     }
-    const hotelsData = hotelListResponse.data;
-    if (hotelsData.length === 0) {
-      console.log("No hotels found by LITE API for the given criteria.");
-      return { rates: [] };
+
+    const data = response.data;
+    if (data.length === 0) {
+      console.log("No hotels found for the given criteria");
+      return res.json({ rates: [] });
     }
-    const hotelIds = hotelsData.map((hotel) => hotel.id);
+
+    const hotelIds = data.map((hotel) => hotel.id);
+    console.log("Found hotel IDs:", hotelIds);
+
     const ratesResponse = await sdk.getFullRates({
       hotelIds: hotelIds,
       occupancies: [{ adults: parseInt(adults, 10) }],
-      currency: "USD", // Or make configurable
-      guestNationality: "US", // Or make configurable
+      currency: "USD",
+      guestNationality: "US",
       checkin: checkin,
       checkout: checkout,
     });
-    if (!ratesResponse || !ratesResponse.data) {
-      console.error("Invalid rates response from LITE API:", ratesResponse);
-      return { rates: [] }; // Or throw specific error
-    }
-    const ratesData = ratesResponse.data;
-    ratesData.forEach((rate) => {
-      rate.hotel = hotelsData.find((hotel) => hotel.id === rate.hotelId);
-    });
-    return { rates: ratesData };
-  } catch (error) {
-    console.error("Error in fetchHotelsAndRates:", error);
-    throw error; // Re-throw to be caught by caller
-  }
-}
 
-app.get("/api/search-hotels", async (req, res) => {
-  console.log("Search endpoint hit via GET");
-  const { checkin, checkout, adults, city, countryCode } = req.query;
-  try {
-    const result = await fetchHotelsAndRates({ city, countryCode, checkin, checkout, adults });
-    res.json(result);
+    console.log("Rates response:", JSON.stringify(ratesResponse, null, 2));
+
+    if (!ratesResponse || !ratesResponse.data) {
+      console.error("Invalid rates response:", ratesResponse);
+      return res.status(500).json({
+        error: "Invalid response from rates API",
+        details: ratesResponse
+      });
+    }
+
+    const rates = ratesResponse.data;
+    rates.forEach((rate) => {
+      rate.hotel = data.find((hotel) => hotel.id === rate.hotelId);
+    });
+
+    res.json({ rates });
   } catch (error) {
-    console.error("Error in /api/search-hotels GET endpoint:", error);
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    console.error("Error searching for hotels:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      details: error.message
+    });
   }
 });
 
@@ -370,147 +366,6 @@ app.get('/sitemap.xml', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/sitemap.xml'));
 });
 
-// New Chatbot API endpoint
-app.post("/api/chatbot/converse", async (req, res) => {
-  const { message, history = [] } = req.body;
-
-  if (!openaiClient) {
-    return res.status(500).json({ reply: "Chatbot is not configured (missing API key)." });
-  }
-
-  // System prompt to guide the DeepSeek model
-  // It instructs the model on its role, required parameters for hotel search,
-  // and how/when to use the 'get_hotel_availability' function.
-  const messages = [
-    {
-      role: "system",
-      content: "You are a helpful assistant for booking hotels. Your goal is to gather necessary information (city, countryCode, check-in date, check-out date, and number of adults) from the user to search for hotels. If any of these details are missing, ask the user for them. Once you have all details, use the 'get_hotel_availability' function. Do not make up information if the user asks for something you don't know; instead, say you don't know or ask them to clarify. Dates should be in YYYY-MM-DD format."
-    },
-    ...history, // Spread previous messages
-    { role: "user", content: message }
-  ];
-
-  // Define the tool(s) that the DeepSeek model can request to call.
-  // 'get_hotel_availability' allows the model to ask our server to fetch hotel data.
-  const tools = [
-    {
-      type: "function",
-      function: {
-        name: "get_hotel_availability",
-        description: "Get hotel availability and rates based on user criteria.",
-        parameters: {
-          type: "object",
-          properties: {
-            city: { type: "string", description: "The city for the hotel search, e.g., London" },
-            countryCode: { type: "string", description: "The ISO-2 country code for the city, e.g., GB for United Kingdom. Infer this if possible from the city or ask the user." },
-            checkin: { type: "string", description: "Check-in date in YYYY-MM-DD format." },
-            checkout: { type: "string", description: "Check-out date in YYYY-MM-DD format." },
-            adults: { type: "integer", description: "Number of adults." }
-          },
-          required: ["city", "countryCode", "checkin", "checkout", "adults"]
-        }
-      }
-    }
-  ];
-
-  try {
-    console.log("Sending to DeepSeek:", JSON.stringify(messages, null, 2));
-    // First call to DeepSeek: send conversation history and user message,
-    // allowing the model to either respond directly or request a tool call.
-    const deepSeekResponse = await openaiClient.chat.completions.create({
-      model: "deepseek-chat", // Or "deepseek-reasoner"
-      messages: messages,
-      tools: tools,
-      tool_choice: "auto",
-    });
-
-    const responseMessage = deepSeekResponse.choices[0].message;
-    console.log("Received from DeepSeek:", JSON.stringify(responseMessage, null, 2));
-
-    if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
-      const toolCall = responseMessage.tool_calls[0];
-      if (toolCall.function.name === "get_hotel_availability") {
-        // DeepSeek requested to call our 'get_hotel_availability' function.
-        // Extract arguments provided by DeepSeek.
-        const args = JSON.parse(toolCall.function.arguments);
-        console.log("DeepSeek requested tool call: get_hotel_availability with args:", args);
-
-        // Call our internal LITE API hotel search function.
-        const hotelResults = await fetchHotelsAndRates(args);
-
-        // Add DeepSeek's message (requesting tool call) to history
-        messages.push(responseMessage);
-
-        if (hotelResults.rates && hotelResults.rates.length > 0) {
-          let hotelSummaryText = "Okay, I found some hotels for you:\n";
-          hotelResults.rates.slice(0, 3).forEach(rate => {
-             hotelSummaryText += `- ${rate.hotel.name} (ID: ${rate.hotel.id})\n`;
-          });
-          if (hotelResults.rates.length > 3) {
-             hotelSummaryText += "And a few more. Ask for details on any hotel by its ID or name if you're interested!\n";
-          }
-
-          messages.push({
-             role: "tool",
-             tool_call_id: toolCall.id,
-             name: toolCall.function.name,
-             // Send summary for DeepSeek to use in its response, not the full hotel data
-             content: JSON.stringify(hotelResults.rates.slice(0,3).map(r => ({id: r.hotel.id, name: r.hotel.name, city: r.hotel.city, country: r.hotel.countryCode })))
-          });
-
-          // Send the tool's execution results back to DeepSeek.
-          // This allows DeepSeek to formulate a natural language response based on the hotel data found (or not found).
-          const followupResponse = await openaiClient.chat.completions.create({
-              model: "deepseek-chat",
-              messages: messages,
-          });
-          console.log("DeepSeek followup response:", JSON.stringify(followupResponse.choices[0].message, null, 2));
-          // Add DeepSeek's final response to history for the next turn
-          // The final reply to the client comes from this follow-up response.
-          messages.push(followupResponse.choices[0].message);
-          res.json({ reply: followupResponse.choices[0].message.content, hotel_data: hotelResults.rates, is_hotel_list: true, history: messages });
-
-        } else {
-          messages.push({
-             role: "tool",
-             tool_call_id: toolCall.id,
-             name: toolCall.function.name,
-             content: JSON.stringify({error: "No hotels found for the given criteria. You could try different dates or a different city."})
-          });
-          const followupResponse = await openaiClient.chat.completions.create({
-              model: "deepseek-chat",
-              messages: messages,
-          });
-          console.log("DeepSeek followup (no hotels):", JSON.stringify(followupResponse.choices[0].message, null, 2));
-          // Add DeepSeek's final response to history for the next turn
-          messages.push(followupResponse.choices[0].message);
-          res.json({ reply: followupResponse.choices[0].message.content, is_hotel_list: false, history: messages });
-        }
-      } else {
-        // Unexpected tool called
-        console.warn("DeepSeek called an unexpected tool:", toolCall.function.name);
-        messages.push(responseMessage); // Add DeepSeek's message
-        // Fallback to a simple response without tool processing
-        res.json({ reply: "An unexpected tool was called by the assistant.", is_hotel_list: false, history: messages });
-      }
-    } else {
-      // No tool call, just a regular message from DeepSeek
-      messages.push(responseMessage);
-      res.json({ reply: responseMessage.content, is_hotel_list: false, history: messages });
-    }
-  } catch (error) {
-    console.error("Error in /api/chatbot/converse:", error);
-    if (error.response) {
-      console.error("DeepSeek API Error Response Status:", error.status);
-      console.error("DeepSeek API Error Response Headers:", error.headers);
-      console.error("DeepSeek API Error Response Data:", error.error); // OpenAI Node SDK nests error details here
-      res.status(error.status || 500).json({ error: "Error calling DeepSeek API", details: error.error });
-    } else {
-      res.status(500).json({ error: "Internal server error while processing chat", details: error.message });
-    }
-  }
-});
-
 // Blog generation API endpoint
 app.post("/api/generate-blog", async (req, res) => {
   try {
@@ -518,51 +373,11 @@ app.post("/api/generate-blog", async (req, res) => {
     res.json({ success: true, message: "All blog articles and sitemap generated successfully" });
   } catch (error) {
     console.error("Error generating blog articles:", error);
-    res.status(500).json({ 
-      error: "Failed to generate blog articles", 
-      details: error.message 
+    res.status(500).json({
+      error: "Failed to generate blog articles",
+      details: error.message
     });
   }
-});
-
-/**
- * API endpoint to fetch hotel reviews from LITE API.
- * Expects a 'hotelId' query parameter.
- */
-app.get("/api/hotel-reviews", async (req, res) => {
-    const { hotelId } = req.query;
-    console.log(`Fetching reviews for hotelId: ${hotelId}`);
-
-    if (!hotelId) {
-        return res.status(400).json({ error: "hotelId is required" });
-    }
-
-    const currentApiKey = process.env.PROD_API_KEY; // Using currentApiKey to avoid conflict with global apiKey
-    if (!currentApiKey) {
-        console.error("LITE_API_KEY (PROD_API_KEY) missing for reviews endpoint");
-        return res.status(500).json({ error: "API key not configured on server." });
-    }
-    const sdk = liteApi(currentApiKey);
-
-    try {
-        // Assuming the sdk.getHotelReviews(hotelId, limit) maps to GET /data/reviews
-        // Fetch up to 20 reviews.
-        const reviewsResponse = await sdk.getHotelReviews(hotelId, 20);
-
-        if (!reviewsResponse || !reviewsResponse.data) {
-            console.warn(`No reviews found or invalid response for hotelId: ${hotelId}`, reviewsResponse);
-            return res.json({ data: [] }); // Send empty array if no reviews
-        }
-        res.json({ data: reviewsResponse.data });
-    } catch (error) {
-        console.error(`Error fetching reviews for hotelId ${hotelId}:`, error);
-        // Check if the error is from the LiteAPI SDK due to "No Content" or similar
-        if (error.response && error.response.status === 204) {
-             console.warn(`No reviews found (204 No Content) for hotelId: ${hotelId}`);
-             return res.json({ data: [] }); // Send empty array if no reviews
-        }
-        res.status(500).json({ error: "Failed to fetch hotel reviews", details: error.message });
-    }
 });
 
 // Serve static pretty URLs for footer pages
