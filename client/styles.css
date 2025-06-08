@@ -1,108 +1,229 @@
+/* Commented out first redesign :root */
+/*
+:root {
+    --primary-dark-blue: #2C3E50; 
+    --primary-soft-blue: #3498DB; 
+    --primary-soft-blue-rgb: 52, 152, 219; 
+    --accent-orange: #E67E22;    
+    --accent-yellow: #F1C40F;   
+    --light-gray-background: #ECF0F1;
+    --very-light-gray: #F8F9FA;
+    --text-dark: #212529;
+    --text-light: #FFFFFF;
+    --text-muted: #6C757D;
+    --border-color: #DEE2E6;
+    --white: #FFFFFF;
+    --success-green: #28A745;
+    --danger-red: #DC3545;
+}
+*/
+
 /* Reset and base styles */
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px; /* Base for rem units */
+    scroll-behavior: smooth;
 }
 
 body {
-	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-	line-height: 1.6;
-	color: #333;
-	padding-top: 80px; /* Add padding to account for fixed header */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333; /* Reverted from var(--text-dark) */
+    background-color: #FFFFFF; /* Reverted from var(--white) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+	padding-top: 80px; /* Add padding to account for fixed header - Preserving this existing style */
 }
 
-/* Header and Navigation */
+a {
+    /* color: var(--primary-soft-blue); */ /* Reverted */
+    text-decoration: none; /* Original had this, but also color #4A5568 for nav-links a */
+}
+
+a:hover {
+    text-decoration: underline; /* Original common hover style */
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Basic Typography for Headings - Commented out as part of first redesign revert */
+/*
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; 
+    line-height: 1.3;
+    color: var(--primary-dark-blue); 
+    margin-bottom: 0.75rem;
+}
+
+h1 {
+    font-size: 2.5rem; 
+}
+
+h2 {
+    font-size: 2rem;   
+}
+
+h3 {
+    font-size: 1.75rem; 
+}
+
+h4 {
+    font-size: 1.5rem;  
+}
+
+p {
+    margin-bottom: 1rem;
+}
+*/
+
+/* Header and Navigation - Reverted to original theme approximately */
 header {
-	background: white;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	background: white; /* Original */
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Original */
 	position: fixed;
 	width: 100%;
 	top: 0;
 	z-index: 1000;
-	height: 80px; /* Set a fixed height for the header */
+	height: 80px; /* Original */
 }
 
 nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 1rem 5%;
-	max-width: 1400px;
+	padding: 1rem 5%; /* Original */
+	max-width: 1400px; /* Original */
 	margin: 0 auto;
-	height: 100%;
+	height: 100%; /* Original */
 }
 
-.logo {
+.logo { 
 	font-size: 1.5rem;
 	font-weight: bold;
-	color: #2D3748;
+	color: #2D3748; /* Original */
 }
 
 .nav-links {
-	display: flex;
+	display: flex; /* Original display */
 	list-style: none;
-	gap: 2rem;
+	gap: 2rem; /* Original gap */
+    /* align-items: center; */ /* Removed */
+    /* margin: 0; */ /* Reverted */
+    /* padding: 0; */ /* Reverted */
 }
+
+/*
+.nav-links li {
+    margin-left: 25px; 
+}
+*/
 
 .nav-links a {
 	text-decoration: none;
-	color: #4A5568;
-	font-weight: 500;
-	transition: color 0.3s ease;
+	color: #4A5568; /* Original color */
+	font-weight: 500; /* Original font-weight */
+	transition: color 0.3s ease; /* Original transition */
+    /* font-size: 0.95rem; */ /* Removed */
+    /* padding: 0.5rem 0; */ /* Removed */
+    /* position: relative; */ /* Removed */
 }
 
-.nav-links a:hover {
+.nav-links a:hover { /* Original hover color */
 	color: #2B6CB0;
+    /* text-decoration: none; */ /* Reverted to allow underline */
 }
 
-/* Mobile Navigation */
+/* Optional: Add a subtle bottom border effect on hover/focus for links - REMOVED */
+/*
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px; 
+    left: 0;
+    background-color: var(--primary-soft-blue);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus::after {
+    width: 100%;
+}
+*/
+
+/* Mobile Navigation - Largely original */
 .mobile-menu-btn {
-	display: none;
+	display: none; 
 	background: none;
 	border: none;
 	font-size: 1.5rem;
-	color: #4A5568;
+	color: #4A5568; /* Original color */
 	cursor: pointer;
-	padding: 0.5rem;
-	z-index: 1001; /* Ensure button stays above nav menu */
+	padding: 0.5rem; /* Original padding */
+	z-index: 1001; 
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { 
+    nav { /* Reverted to original media query nav styles */
+        /* width: 95%; */ 
+        /* padding: 0 0.5rem; */
+    }
 	.mobile-menu-btn {
-		display: block;
+		display: block; 
 	}
 
 	.nav-links {
-		display: none;
+		display: none; 
 		position: fixed;
-		top: 80px; /* Position below header */
+		top: 80px; /* Original top */
 		left: 0;
 		right: 0;
-		background: white;
-		padding: 1rem;
+		background: white; /* Original background */
+		padding: 1rem; /* Original padding */
 		flex-direction: column;
-		gap: 1rem;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		gap: 1rem; /* Original gap */
+		box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Original shadow */
 	}
 
-	.nav-links.active {
+	.nav-links.active { 
 		display: flex;
 	}
 
 	.nav-links li {
+        /* margin: 0; */ /* Reverted */
 		width: 100%;
 		text-align: center;
 	}
 
 	.nav-links a {
 		display: block;
-		padding: 0.5rem;
+		padding: 0.5rem; /* Original padding */
+        /* border-bottom: 1px solid var(--border-color); */ /* Removed */
 	}
+    /*
+    .nav-links li:last-child a {
+        border-bottom: none;
+    }
+    .nav-links a::after { 
+        display: none;
+    }
+    */
 }
 
-/* Logo image styles */
-.header-logo {
+/* Logo image styles - Original */
+.header-logo { 
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -111,13 +232,13 @@ nav {
 }
 
 .header-logo img {
-	height: 54px;
-	width: auto;
-	vertical-align: middle;
-	display: inline-block;
+    height: 54px; /* Original */
+    width: auto;
+    vertical-align: middle; 
+    display: inline-block; 
 }
 
-.header-logo .logo-text {
+.header-logo .logo-text { 
 	font-size: 2rem;
 	font-weight: 700;
 	color: #2D3748;
@@ -125,7 +246,7 @@ nav {
 	letter-spacing: 0.5px;
 }
 
-/* Hero Section */
+/* Hero Section - Reverted to original */
 .hero {
 	background: linear-gradient(rgba(0,0,0,0.68), rgba(0,0,0,0.68)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945');
 	background-size: cover;
@@ -138,49 +259,119 @@ nav {
 	text-align: center;
 	color: white;
 	padding: 0 1rem;
-	margin-top: 60px;
+	margin-top: 60px; /* Original margin */
 }
 
-.hero h1, .hero p, .hero .stats, .hero .stat-item h3, .hero .stat-item p {
-	color: #fff;
-}
-
-.hero h1 {
+.hero h1 { /* Original hero h1 */
+	color: #fff; 
 	font-size: 3.5rem;
-	margin-bottom: 1rem;
+	margin-bottom: 1rem; 
 	max-width: 800px;
 }
 
-.hero p {
+.hero p { /* Original hero p */
+    color: #fff;
 	font-size: 1.2rem;
-	margin-bottom: 2rem;
+	margin-bottom: 2rem; 
 	max-width: 600px;
 }
 
-.stats {
+.stats { /* Original .stats */
 	display: flex;
-	gap: 4rem;
-	margin: 2rem 0;
+	gap: 4rem; 
+	margin: 2rem 0; 
+    /* margin-bottom: 2.5rem; */ /* Removed redesign specific margin */
+    justify-content: center; 
 }
 
-.stat-item h3 {
-	font-size: 2rem;
-	margin-bottom: 0.5rem;
+.stats .stat-item h3, .stats .stat-item p { /* Original color */
+    color: #fff;
+}
+/* Styles for integrated hero search form - REMOVED / COMMENTED OUT */
+/*
+.hero .hero-subtitle { 
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.hero-search-form-container {
+    background-color: var(--white);
+    padding: 1.5rem; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); 
+    max-width: 900px; 
+    margin: 0 auto; 
 }
 
-.cta-button {
-	background: #2B6CB0;
-	color: white;
-	padding: 1rem 2rem;
-	border-radius: 5px;
-	text-decoration: none;
-	font-weight: bold;
-	transition: background 0.3s ease;
+.hero-search-form {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 1rem; 
+    align-items: flex-end; 
 }
 
-.cta-button:hover {
-	background: #2C5282;
+.hero-search-form .input-group {
+    flex: 1 1 150px; 
+    display: flex;
+    flex-direction: column; 
+    text-align: left; 
+    margin-bottom: 0; 
 }
+
+.hero-search-form .input-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.hero-search-form .input-bk { 
+    width: 100%;
+    padding: 0.75rem; 
+    border: 1px solid var(--border-color);
+    border-radius: 8px; 
+    font-size: 0.95rem;
+    background-color: var(--white);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-search-form .input-bk:focus {
+    outline: none;
+    border-color: var(--primary-soft-blue);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-soft-blue-rgb), 0.25);
+}
+
+.hero-search-button {
+    background-color: var(--accent-orange);
+    color: var(--white);
+    padding: 0.75rem 1.5rem; 
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    gap: 0.5rem; 
+    flex: 1 1 auto; 
+    min-width: 150px; 
+    margin-top: 0; 
+}
+
+.hero-search-button:hover {
+    background-color: #D35400; 
+    transform: none; 
+}
+
+.hero-search-button i {
+    font-size: 0.9em; 
+}
+*/
 
 /* Featured Hotels */
 .featured-hotels {
@@ -223,18 +414,8 @@ nav {
 }
 
 /* Search Section */
-.search-section {
-	background: #F7FAFC;
-	padding: 4rem 5%;
-	text-align: center;
-}
-
-.search-container {
-	max-width: 800px;
-	margin: 2rem auto;
-}
-
-.search-card {
+/* Search Section - Restoring original .search-card styles */
+.search-card { 
 	background: #fff;
 	border-radius: 18px;
 	box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10), 0 1.5px 4px rgba(44, 62, 80, 0.08);
@@ -246,47 +427,20 @@ nav {
 	z-index: 2;
 }
 
-.search {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 24px;
-	justify-content: space-between;
-	align-items: flex-end;
-}
+/* .search (global selector from details.js, might need to be scoped or removed if not used elsewhere) */
+/* For now, assuming the .search class on details page is distinct or will be handled separately.
+   The .hero-search-form targets the new form specifically.
+   The old .search styling for the form layout is effectively removed by commenting out .search-card.
+*/
 
-.input-group {
-	flex: 1 1 180px;
-	min-width: 180px;
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 0;
-}
+/* Styles for .input-group and .input-bk are now scoped under .hero-search-form */
+/* So, global .input-group and .input-bk might still apply elsewhere, or can be removed if only for old form */
 
-.input-group label {
-	font-size: 1rem;
-	font-weight: 500;
-	margin-bottom: 6px;
-	color: #21364b;
-}
-
-.input-bk {
-	border: 1.5px solid #d1d5db;
-	border-radius: 6px;
-	padding: 10px 14px;
-	font-size: 1rem;
-	background: #f9fafb;
-	transition: border 0.2s;
-}
-
-.input-bk:focus {
-	border-color: #2B6CB0;
-	outline: none;
-	background: #fff;
-}
-
+/* Global button style - Commented out for revert */
+/*
 button {
-	background: linear-gradient(90deg, #2B6CB0 0%, #21364b 100%);
-	border-radius: 8px;
+	background: linear-gradient(90deg, var(--primary-soft-blue) 0%, var(--primary-dark-blue) 100%); 
+	border-radius: 8px; 
 	color: white;
 	border: none;
 	padding: 14px 28px;
@@ -301,199 +455,213 @@ button:hover {
 	background: linear-gradient(90deg, #21364b 0%, #2B6CB0 100%);
 	transform: translateY(-2px) scale(1.03);
 }
+*/
 
-/* Features Section */
-.features {
-	padding: 4rem 5%;
-	text-align: center;
-	max-width: 1400px;
-	margin: 0 auto;
+/* Features Section - Commented out for revert */
+/*
+section#features { 
+    padding: 3rem 1rem; 
+    background-color: var(--white); 
+    text-align: center;
+}
+
+section#features h2 { 
+    font-size: 2.2rem; 
+    color: var(--primary-dark-blue);
+    margin-bottom: 2.5rem; 
 }
 
 .feature-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
-	margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 2rem; 
+    max-width: 1200px; 
+    margin: 0 auto; 
 }
 
 .feature-card {
-	padding: 2rem;
-	background: white;
-	border-radius: 10px;
-	box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background-color: var(--white);
+    padding: 2rem 1.5rem; 
+    border: 1px solid var(--border-color);
+    border-radius: 12px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); 
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); 
 }
 
 .feature-card i {
-	color: #2B6CB0;
-	margin-bottom: 1rem;
+    font-size: 2.5rem; 
+    color: var(--primary-soft-blue); 
+    margin-bottom: 1rem;
 }
 
-/* Footer */
+.feature-card h3 {
+    font-size: 1.35rem; 
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0; 
+}
+*/
+
+/* Footer - Commented out for revert */
+/*
 footer {
-	background: #232f3e;
-	color: #f5f6fa;
-	padding: 0;
-	font-size: 1rem;
+    background-color: var(--primary-dark-blue);
+    color: var(--very-light-gray); 
+    padding: 3rem 1rem 1rem 1rem; 
+    margin-top: 3rem; 
 }
 
 .footer-main {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-items: flex-start;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 48px 0 24px 0;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    gap: 2rem; 
+    max-width: 1200px;
+    margin: 0 auto 2rem auto; 
 }
 
 .footer-brand {
-	flex: 1 1 320px;
-	min-width: 320px;
-	margin-right: 40px;
+    flex: 1 1 300px; 
+    margin-right: 2rem; 
 }
 
 .footer-logo-row {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-.footer-logo {
-	font-size: 2.2rem;
-	color: #ffd600;
+.footer-logo i { 
+    font-size: 2rem;
+    color: var(--primary-soft-blue); 
+    margin-right: 0.5rem;
 }
 
 .footer-brand-name {
-	font-size: 2rem;
-	font-weight: 700;
-	color: #f5f6fa;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--white);
 }
 
 .footer-desc {
-	color: #cfd8dc;
-	font-size: 1.08rem;
-	margin-bottom: 28px;
-	max-width: 400px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--light-gray-background); 
 }
 
-.footer-social {
-	display: flex;
-	gap: 24px;
-	margin-top: 8px;
-}
-
-.footer-social a {
-	color: #cfd8dc;
-	background: #293447;
-	border-radius: 50%;
-	width: 40px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.3rem;
-	transition: background 0.2s, color 0.2s;
+.footer-social a { 
+    color: var(--very-light-gray);
+    margin-right: 1rem; 
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
 }
 
 .footer-social a:hover {
-	background: #ffd600;
-	color: #232f3e;
+    color: var(--primary-soft-blue); 
+    text-decoration: none;
 }
 
 .footer-links {
-	display: flex;
-	flex: 2 1 600px;
-	justify-content: space-between;
-	gap: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem; 
+    flex: 2 1 600px; 
 }
 
 .footer-section {
-	min-width: 160px;
+    flex: 1 1 150px; 
 }
 
 .footer-section h4 {
-	color: #f5f6fa;
-	font-size: 1.1rem;
-	font-weight: 700;
-	margin-bottom: 18px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 1rem;
 }
 
 .footer-section ul {
-	list-style: none;
-	padding: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .footer-section ul li {
-	margin-bottom: 14px;
+    margin-bottom: 0.5rem;
 }
 
-.footer-section a {
-	color: #cfd8dc;
-	text-decoration: none;
-	font-size: 1rem;
-	transition: color 0.2s;
+.footer-section ul a {
+    color: var(--very-light-gray);
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
 }
 
-.footer-section a:hover {
-	color: #ffd600;
+.footer-section ul a:hover {
+    color: var(--primary-soft-blue);
+    text-decoration: none;
 }
 
 .footer-bottom-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-top: 1px solid #374151;
-	padding: 18px 0 12px 0;
-	max-width: 1200px;
-	margin: 0 auto;
-	font-size: 0.98rem;
+    border-top: 1px solid var(--primary-soft-blue); 
+    padding: 1.5rem 0 1rem 0;
+    text-align: center; 
+    font-size: 0.85rem;
+    color: var(--light-gray-background);
+    max-width: 1200px;
+    margin: 0 auto; 
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
 }
 
-.footer-bottom-left {
-	color: #cfd8dc;
+.footer-bottom-left, .footer-bottom-right {
+    flex: 1 1 auto; 
 }
+.footer-bottom-left { text-align: left; }
+.footer-bottom-right { text-align: right; }
 
-.footer-bottom-right {
-	display: flex;
-	gap: 24px;
-	align-items: center;
-}
-
-.trust-badge {
-	color: #ffd600;
-	font-weight: 600;
-	font-size: 1rem;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.trust-badge i {
-	color: #ffd600;
-	font-size: 1.1rem;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 900px) { 
 	.footer-main {
 		flex-direction: column;
-		gap: 32px;
-		padding: 40px 0 16px 0;
+		gap: 2rem; 
 	}
 	.footer-links {
 		flex-direction: column;
-		gap: 32px;
+		gap: 2rem; 
 	}
 	.footer-brand {
-		margin-right: 0;
-		margin-bottom: 24px;
+		margin-right: 0; 
+		margin-bottom: 1rem; 
 	}
-	.footer-bottom-bar {
-		flex-direction: column;
-		gap: 10px;
-		padding: 16px 0 8px 0;
-	}
+}
+@media (max-width: 768px) { 
+    .footer-bottom-left, .footer-bottom-right {
+        text-align: center;
+        flex-basis: 100%;
+    }
+}
+
+.trust-badge {
+    margin-left: 1rem; /* For spacing if they are on the right */
+    display: inline-flex; 
+    align-items: center;
+}
+.trust-badge i { 
+    margin-right: 0.3rem;
 }
 
 /* Loading State */
@@ -509,11 +677,13 @@ footer {
 
 /* Hotel Booking Elements */
 #hotels {
-	max-width: 1200px;
+	max-width: 1200px; /* This can stay as it defines the overall width of the results area */
 	margin: 2rem auto;
 	padding: 0 1rem;
 }
 
+/* Commenting out old .card-container and .card styles that might conflict */
+/*
 .card-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(800px, 1fr));
@@ -530,42 +700,137 @@ footer {
 	box-shadow: 0 0 0 1px #0e3f7e0a, 0 1px 1px -0.5px #2a33450a, 0 3px 3px -1.5px #2a33460a,
 		0 6px 6px -3px #2a33460a, 0 6px 8px -6px #0e3f7e0a, 0 4px 4px -12px #0e3f7e0a;
 }
+*/
 
-.card-id {
-	font-size: 20px;
-	font-weight: bold;
+/* New Hotel Result Card Styles - Commented out for revert */
+/*
+#hotels .card-container { 
+    margin-bottom: 2rem; 
+    
 }
 
-.card-title {
-	font-size: 32px;
-	font-weight: bold;
-	color: #2286f9;
-	margin-bottom: 40px;
-	margin-top: 0;
+#hotels .card { 
+    display: flex;
+    flex-direction: row; 
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); 
+    overflow: hidden;
+    border: 1px solid var(--border-color); 
+    padding: 0; 
+    margin: 0 0 1.5rem 0; 
 }
 
-.card-header {
-	font-size: 20px;
-	font-weight: bold;
-	margin-bottom: 10px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
+#hotels .card .card-image {
+    flex-basis: 220px; 
+    flex-shrink: 0;
+    background-color: var(--light-gray-background); 
+    
+    height: auto; 
+    min-height: 180px; 
 }
 
-.price-btn {
-	font-size: 14px;
-	font-weight: 500;
-	background-color: #2286f9;
-	color: #fff;
-	padding: 10px 12px;
-	border-radius: 4px;
-	border: none;
-	cursor: pointer;
-	text-transform: capitalize;
-	margin-top: 12px;
+#hotels .card .card-image img {
+    width: 100%;
+    height: 100%; 
+    object-fit: cover; 
+    display: block; 
 }
+
+#hotels .card .items-start > .flex-between-end.w-full { 
+    flex-grow: 1;
+    padding: 1.25rem; 
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-between;
+}
+
+#hotels .card .items-start > .flex-between-end.w-full > div:first-child { 
+    flex-grow: 1; 
+    padding-right: 1rem; 
+}
+
+
+#hotels .card .card-id { 
+    font-size: 1.25rem; 
+    font-weight: 600;
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.35rem;
+}
+
+#hotels .card .card-title { 
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+#hotels .card .featues { 
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+#hotels .card .featues span { 
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+#hotels .card p.red { 
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0; 
+}
+#hotels .card p.red span { 
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background-color: var(--light-gray-background); 
+    color: var(--text-dark); 
+}
+
+#hotels .card .flex-between-end.w-full > p.flex.flex-col { 
+    margin-top: 0; 
+    align-items: flex-end; 
+    
+    flex-shrink: 0; 
+    text-align: right; 
+}
+
+
+#hotels .card .price-btn {
+    background-color: var(--accent-orange);
+    color: var(--white);
+    padding: 0.65rem 1.3rem; 
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    min-width: 150px; 
+    margin-top: 0.5rem; 
+}
+
+#hotels .card .price-btn:hover {
+    background-color: #D35400; 
+    transform: translateY(-2px); 
+}
+
+#hotels .card .price-btn s { 
+    font-size: 0.8em;
+    color: var(--light-gray-background); 
+    margin-right: 0.5em;
+    font-weight: normal;
+}
+
+#hotels .card .price {
+    font-size: 1.4rem; 
+    font-weight: 700;
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.25rem; 
+}
+*/
 
 .flex {
 	display: flex;
@@ -647,11 +912,13 @@ footer {
 }
 
 p {
-	color: #4f4f4f;
+	color: #4f4f4f; /* Existing specific p color, will be overridden by new default unless more specific */
+    /* margin-bottom: 1rem; */ /* This is now default, can be removed if this p is not special */
 }
 
-h1, h2, h3, h4 {
-	color: #1d1d1d;
+h1, h2, h3, h4 { /* These were specific, now will take from global unless more specific */
+	color: #1d1d1d; 
+    /* Default heading styles from above will apply if these are removed or less specific */
 }
 
 .search {
@@ -1154,310 +1421,5 @@ button {
         margin-top: 8px;
         font-size: 1.2rem;
         padding: 16px 0;
-    }
-}
-
-/* Chatbot Styles */
-#chatbot-toggle-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    border: none; /* Overriding default button border */
-    font-size: 1rem; /* Ensure text size is appropriate */
-}
-
-#chatbot-toggle-button i {
-    margin-right: 8px;
-}
-
-#chatbot-window {
-    position: fixed;
-    bottom: 80px; /* To be above the toggle button */
-    right: 20px;
-    width: 350px;
-    height: 450px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    z-index: 999;
-    overflow: hidden; /* To ensure border-radius clips content */
-}
-
-.chatbot-hidden {
-    display: none !important;
-}
-
-#chatbot-header {
-    background-color: #f1f1f1;
-    padding: 10px;
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#chatbot-close-button {
-    background: none;
-    border: none;
-    font-size: 1.5em; /* Increased size for better clickability */
-    cursor: pointer;
-    color: #333; /* Ensure visibility */
-    padding: 0 5px; /* Add some padding */
-    line-height: 1; /* Adjust line height if necessary */
-}
-
-#chatbot-messages-container {
-    flex-grow: 1;
-    padding: 10px;
-    overflow-y: auto; /* For scrolling messages */
-    display: flex;
-    flex-direction: column; /* So messages stack */
-    gap: 8px; /* Space between messages */
-}
-
-.chat-message {
-    padding: 8px 12px;
-    margin-bottom: 0; /* Handled by gap in container */
-    border-radius: 15px;
-    max-width: 80%;
-    word-wrap: break-word;
-    line-height: 1.4;
-}
-
-.user-message {
-    background-color: #007bff;
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 5px;
-}
-
-.bot-message {
-    background-color: #e9e9eb;
-    color: black;
-    align-self: flex-start;
-    border-bottom-left-radius: 5px;
-}
-
-#chatbot-input-area {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background-color: #f8f9fa; /* Light background for input area */
-}
-
-#chatbot-input {
-    flex-grow: 1;
-    padding: 10px; /* Increased padding */
-    border: 1px solid #ccc;
-    border-radius: 20px; /* More rounded input */
-    margin-right: 8px; /* Increased margin */
-    font-size: 0.95rem;
-}
-
-#chatbot-send-button {
-    padding: 10px 15px; /* Increased padding */
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 20px; /* More rounded button */
-    cursor: pointer;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#chatbot-send-button i {
-    margin-right: 5px;
-}
-
-#chatbot-send-button:hover {
-    background-color: #0056b3;
-}
-
-/* Additional Chatbot Message Types */
-.bot-message.bot-typing-message { /* For the 'Thinking...' message */
-    font-style: italic;
-    color: #555;
-    background-color: #f0f0f0; /* Slightly different background for typing */
-}
-
-.bot-message.bot-error-message { /* For error messages from bot */
-    background-color: #ffdddd;
-    color: #d8000c;
-    border: 1px solid #d8000c;
-}
-
-/* Hotel Cards within Chatbot */
-.hotel-cards-container {
-    display: flex;
-    flex-direction: column; /* Stack cards vertically */
-    gap: 10px; /* Space between cards */
-    margin-top: 10px; /* Space above the first card */
-    padding-left: 5px; /* Indent card container slightly */
-    padding-right: 5px;
-}
-
-/* Ensure .hotel-card within chatbot is distinct from main page .hotel-card if any */
-#chatbot-messages-container .hotel-card {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    /* Resetting properties that might be inherited from a global .hotel-card */
-    margin: 0;
-    overflow: visible;
-    transition: none;
-    max-width: 100%; /* Ensure it fits in the chat bubble */
-}
-
-#chatbot-messages-container .hotel-card:hover {
-    transform: none; /* No hover transform for chat cards */
-}
-
-
-#chatbot-messages-container .hotel-card h4 {
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 0.95em; /* Slightly smaller for chat */
-    color: #333; /* Ensure heading color is visible */
-}
-
-#chatbot-messages-container .hotel-card p {
-    font-size: 0.85em;
-    margin-bottom: 8px;
-    color: #555; /* Ensure text color is visible */
-}
-
-.view-details-button {
-    background-color: #28a745; /* Green color for view details */
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8em;
-    text-align: center;
-    display: inline-block; /* Ensure it behaves like a button */
-}
-
-.view-details-button:hover {
-    background-color: #218838;
-}
-
-/* Styles for Enhanced Hotel Details Page (details.html) */
-#hotel-image-gallery-container,
-#hotel-additional-details,
-#hotel-facilities-container,
-#hotel-reviews-section {
-    margin-top: 20px;
-    padding: 20px; /* Increased padding for better spacing */
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for sections */
-}
-
-#hotel-image-gallery-container h3,
-#hotel-additional-details h4,
-#hotel-facilities-container h4,
-#hotel-reviews-section h2 {
-    color: #333;
-    margin-bottom: 15px; /* Space below section titles */
-}
-
-#hotel-image-gallery {
-    display: flex; /* Allow images to flow inline and wrap */
-    flex-wrap: wrap;
-    gap: 10px; /* Space between images */
-}
-
-#hotel-image-gallery img {
-    width: 120px;
-    height: 90px; /* Fixed height for consistency */
-    object-fit: cover; /* Ensure images cover the area well */
-    margin: 0; /* Gap is handled by the container */
-    border: 2px solid #ddd; /* Slightly more prominent border */
-    border-radius: 4px;
-    padding: 2px;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-}
-
-#hotel-image-gallery img:hover {
-    transform: scale(1.05); /* Slight zoom on hover */
-    border-color: #007bff;
-}
-
-#hotel-additional-details p {
-    margin-bottom: 8px; /* Space between paragraphs */
-    line-height: 1.6;
-}
-
-#hotel-additional-details strong {
-    color: #555;
-}
-
-#hotel-facilities-list {
-    list-style-type: disc;
-    padding-left: 25px; /* More padding for list items */
-    columns: 2; /* Display facilities in two columns if space allows */
-    column-gap: 20px;
-}
-
-#hotel-facilities-list li {
-    margin-bottom: 8px; /* Consistent spacing for list items */
-    font-size: 0.95em;
-}
-
-.hotel-review-item {
-    border-bottom: 1px solid #e0e0e0; /* Lighter border */
-    padding: 15px 0; /* More vertical padding */
-    margin-bottom: 15px;
-}
-
-.hotel-review-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.hotel-review-item h4 {
-    margin-top: 0;
-    margin-bottom: 8px; /* Increased space */
-    color: #0056b3; /* Darker blue for review titles */
-    font-size: 1.1em;
-}
-
-.review-meta {
-    font-size: 0.8em; /* Slightly smaller meta text */
-    color: #666; /* Darker grey for meta */
-    margin-bottom: 10px;
-}
-
-.hotel-review-item p {
-    margin-bottom: 8px;
-    line-height: 1.5;
-    color: #444; /* Slightly darker text for readability */
-}
-
-.hotel-review-item p strong { /* For Pros/Cons labels */
-    color: #333;
-}
-
-/* Responsive adjustments for facilities list */
-@media (max-width: 600px) {
-    #hotel-facilities-list {
-        columns: 1; /* Single column on smaller screens */
     }
 }
