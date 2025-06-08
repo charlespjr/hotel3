@@ -1,108 +1,222 @@
+:root {
+    --primary-dark-blue: #2C3E50; /* A common dark blue */
+    --primary-soft-blue: #3498DB; /* A common softer blue */
+    --primary-soft-blue-rgb: 52, 152, 219; /* Added for box-shadow */
+    --accent-orange: #E67E22;    /* A common orange */
+    --accent-yellow: #F1C40F;   /* A common yellow */
+    --light-gray-background: #ECF0F1;
+    --very-light-gray: #F8F9FA;
+    --text-dark: #212529;
+    --text-light: #FFFFFF;
+    --text-muted: #6C757D;
+    --border-color: #DEE2E6;
+    --white: #FFFFFF;
+    --success-green: #28A745;
+    --danger-red: #DC3545;
+    /* Add more if needed */
+}
+
 /* Reset and base styles */
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px; /* Base for rem units */
+    scroll-behavior: smooth;
 }
 
 body {
-	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-	line-height: 1.6;
-	color: #333;
-	padding-top: 80px; /* Add padding to account for fixed header */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--white); /* Default background, can be overridden per section */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+	padding-top: 80px; /* Add padding to account for fixed header - Preserving this existing style */
+}
+
+a {
+    color: var(--primary-soft-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Basic Typography for Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600; /* Semi-bold for headings by default */
+    line-height: 1.3;
+    color: var(--primary-dark-blue); /* Darker color for headings */
+    margin-bottom: 0.75rem;
+}
+
+h1 {
+    font-size: 2.5rem; /* Example size */
+}
+
+h2 {
+    font-size: 2rem;   /* Example size */
+}
+
+h3 {
+    font-size: 1.75rem; /* Example size */
+}
+
+h4 {
+    font-size: 1.5rem;  /* Example size */
+}
+
+p {
+    margin-bottom: 1rem;
 }
 
 /* Header and Navigation */
 header {
-	background: white;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	position: fixed;
-	width: 100%;
-	top: 0;
-	z-index: 1000;
-	height: 80px; /* Set a fixed height for the header */
+    background-color: var(--white);
+    padding: 1rem 0; /* More vertical padding */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Softer shadow */
+    position: fixed; /* Make it sticky */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it's above other content */
+    /* height: auto; Ensure height adjusts to content like padding + logo */
 }
 
 nav {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 1rem 5%;
-	max-width: 1400px;
-	margin: 0 auto;
-	height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%; /* Or a max-width approach */
+    max-width: 1200px; /* Example max-width */
+    margin: 0 auto; /* Center the nav content */
+    padding: 0 1rem; /* Padding for smaller screens if width is 100% */
 }
 
-.logo {
+.logo { /* Existing style, preserved */
 	font-size: 1.5rem;
 	font-weight: bold;
 	color: #2D3748;
 }
 
 .nav-links {
-	display: flex;
-	list-style: none;
-	gap: 2rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0; /* Reset margin */
+    padding: 0; /* Reset padding */
+}
+
+.nav-links li {
+    margin-left: 25px; /* Spacing between links */
 }
 
 .nav-links a {
-	text-decoration: none;
-	color: #4A5568;
-	font-weight: 500;
-	transition: color 0.3s ease;
+    color: var(--text-dark);
+    font-weight: 500; /* Medium weight for nav links */
+    font-size: 0.95rem;
+    text-decoration: none;
+    padding: 0.5rem 0; /* Add some vertical padding for easier clicking if needed */
+    position: relative;
+    transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-	color: #2B6CB0;
+.nav-links a:hover,
+.nav-links a:focus {
+    color: var(--primary-soft-blue);
+    text-decoration: none; /* Keep no underline on hover by default */
+}
+
+/* Optional: Add a subtle bottom border effect on hover/focus for links */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px; /* Adjust position */
+    left: 0;
+    background-color: var(--primary-soft-blue);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus::after {
+    width: 100%;
 }
 
 /* Mobile Navigation */
 .mobile-menu-btn {
-	display: none;
-	background: none;
-	border: none;
-	font-size: 1.5rem;
-	color: #4A5568;
-	cursor: pointer;
-	padding: 0.5rem;
-	z-index: 1001; /* Ensure button stays above nav menu */
+    display: none; /* Will be shown via media query */
+    background: none;
+    border: none;
+    color: var(--primary-dark-blue);
+    font-size: 1.5rem; /* Adjust icon size */
+    cursor: pointer;
+    /* padding: 0.5rem; */ /* Existing padding, can be kept or removed if not needed */
+    /* z-index: 1001; */ /* Existing z-index, can be kept or removed */
 }
 
-@media (max-width: 768px) {
-	.mobile-menu-btn {
-		display: block;
-	}
+@media (max-width: 768px) { /* Or existing breakpoint */
+    nav {
+        width: 95%; /* Adjust for mobile */
+        padding: 0 0.5rem;
+    }
+    .nav-links {
+        /* Styles for when mobile menu is open - likely already handled by navigation.js by adding/removing a class */
+        /* Example if it becomes a dropdown: */
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        position: absolute;
+        top: 100%; /* Position below the header, adjust if header height changes */
+        left: 0;
+        width: 100%;
+        background-color: var(--white);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 1rem 0;
+    }
 
-	.nav-links {
-		display: none;
-		position: fixed;
-		top: 80px; /* Position below header */
-		left: 0;
-		right: 0;
-		background: white;
-		padding: 1rem;
-		flex-direction: column;
-		gap: 1rem;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	}
+    .nav-links.active { /* Class added by navigation.js */
+        display: flex;
+    }
 
-	.nav-links.active {
-		display: flex;
-	}
+    .nav-links li {
+        margin: 0;
+        width: 100%;
+        text-align: center;
+    }
 
-	.nav-links li {
-		width: 100%;
-		text-align: center;
-	}
+    .nav-links a {
+        display: block;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .nav-links li:last-child a {
+        border-bottom: none;
+    }
+    .nav-links a::after { /* Remove underline hover effect for mobile dropdown */
+        display: none;
+    }
 
-	.nav-links a {
-		display: block;
-		padding: 0.5rem;
-	}
+    .mobile-menu-btn {
+        display: block; /* Show mobile menu button */
+    }
 }
 
 /* Logo image styles */
-.header-logo {
+.header-logo { /* Existing style, preserved with minor potential overlap from nav a */
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -111,13 +225,13 @@ nav {
 }
 
 .header-logo img {
-	height: 54px;
-	width: auto;
-	vertical-align: middle;
-	display: inline-block;
+    height: 40px; /* Adjust as needed, make it a bit more prominent */
+    width: auto;
+    /* vertical-align: middle; */ /* display:block on img handles this */
+    /* display: inline-block; */ /* Now handled by global img style or flex context */
 }
 
-.header-logo .logo-text {
+.header-logo .logo-text { /* Existing style, preserved */
 	font-size: 2rem;
 	font-weight: 700;
 	color: #2D3748;
@@ -127,60 +241,120 @@ nav {
 
 /* Hero Section */
 .hero {
-	background: linear-gradient(rgba(0,0,0,0.68), rgba(0,0,0,0.68)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945');
-	background-size: cover;
-	background-position: center;
-	height: 80vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	color: white;
-	padding: 0 1rem;
-	margin-top: 60px;
-}
-
-.hero h1, .hero p, .hero .stats, .hero .stat-item h3, .hero .stat-item p {
-	color: #fff;
+    background-color: var(--light-gray-background); /* Or a gradient, or placeholder for image */
+    /* background-image: linear-gradient(to bottom, var(--primary-soft-blue), var(--primary-dark-blue)); */
+    padding: 4rem 1rem 3rem 1rem; /* Increased padding, esp. top to clear fixed header */
+    text-align: center;
+    /* margin-top: 70px; */ /* Body already has padding-top for fixed header, so this might not be needed or needs adjustment */
 }
 
 .hero h1 {
-	font-size: 3.5rem;
-	margin-bottom: 1rem;
-	max-width: 800px;
+    color: var(--primary-dark-blue);
+    font-size: 2.8rem; /* Larger hero title */
+    margin-bottom: 0.5rem;
 }
 
-.hero p {
-	font-size: 1.2rem;
-	margin-bottom: 2rem;
-	max-width: 600px;
+.hero .hero-subtitle { /* Style the new class for hero paragraph */
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.stats {
+.stats { /* Existing .stats, ensuring color and margin */
 	display: flex;
-	gap: 4rem;
-	margin: 2rem 0;
+	gap: 4rem; /* Preserving existing gap */
+	margin: 2rem 0; /* Preserving existing margin */
+    margin-bottom: 2.5rem; /* Space before search form */
+    justify-content: center; /* Center stats items */
 }
 
-.stat-item h3 {
-	font-size: 2rem;
-	margin-bottom: 0.5rem;
+.stats .stat-item h3, .stats .stat-item p { /* Ensuring text color for stats if hero background changes */
+    color: var(--primary-dark-blue); /* Or var(--text-muted) for p if needed */
+}
+.hero .stats .stat-item h3, .hero .stats .stat-item p { /* Override if inside dark hero background */
+    color: var(--primary-dark-blue); /* Defaulting to dark text on light hero background */
 }
 
-.cta-button {
-	background: #2B6CB0;
-	color: white;
-	padding: 1rem 2rem;
-	border-radius: 5px;
-	text-decoration: none;
-	font-weight: bold;
-	transition: background 0.3s ease;
+
+/* Styles for new search form in Hero */
+.hero-search-form-container {
+    background-color: var(--white);
+    padding: 1.5rem; /* Padding inside the white box */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Softer, larger shadow */
+    max-width: 900px; /* Max width for the form box */
+    margin: 0 auto; /* Center the form box */
 }
 
-.cta-button:hover {
-	background: #2C5282;
+.hero-search-form {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    gap: 1rem; /* Space between form elements */
+    align-items: flex-end; /* Align items to the bottom (labels above inputs) */
 }
+
+.hero-search-form .input-group {
+    flex: 1 1 150px; /* Flex properties for responsiveness */
+    display: flex;
+    flex-direction: column; /* Labels on top of inputs */
+    text-align: left; /* Align labels to the left */
+    margin-bottom: 0; /* Reset margin-bottom from global .input-group if any */
+}
+
+.hero-search-form .input-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+}
+
+.hero-search-form .input-bk { /* Targets all input fields with this class */
+    width: 100%;
+    padding: 0.75rem; /* More padding */
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Rounded corners for inputs */
+    font-size: 0.95rem;
+    background-color: var(--white);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-search-form .input-bk:focus {
+    outline: none;
+    border-color: var(--primary-soft-blue);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-soft-blue-rgb), 0.25);
+}
+
+.hero-search-button {
+    background-color: var(--accent-orange);
+    color: var(--white);
+    padding: 0.75rem 1.5rem; /* Match input padding */
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex; /* For icon alignment */
+    align-items: center;
+    justify-content: center; /* Center content in button */
+    gap: 0.5rem; /* Space between icon and text */
+    flex: 1 1 auto; /* Allow it to grow or shrink but also have a base size */
+    min-width: 150px; /* Ensure it's not too small on wrap */
+    margin-top: 0; /* Override global button margin-top if any */
+}
+
+.hero-search-button:hover {
+    background-color: #D35400; /* Darker orange */
+    transform: none; /* Override global button transform if any */
+}
+
+.hero-search-button i {
+    font-size: 0.9em; /* Adjust icon size if needed */
+}
+
 
 /* Featured Hotels */
 .featured-hotels {
@@ -223,6 +397,8 @@ nav {
 }
 
 /* Search Section */
+/* Search Section - Commenting out old styles that might conflict */
+/*
 .search-section {
 	background: #F7FAFC;
 	padding: 4rem 5%;
@@ -245,48 +421,22 @@ nav {
 	top: -60px;
 	z-index: 2;
 }
+*/
 
-.search {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 24px;
-	justify-content: space-between;
-	align-items: flex-end;
-}
+/* .search (global selector from details.js, might need to be scoped or removed if not used elsewhere) */
+/* For now, assuming the .search class on details page is distinct or will be handled separately.
+   The .hero-search-form targets the new form specifically.
+   The old .search styling for the form layout is effectively removed by commenting out .search-card.
+*/
 
-.input-group {
-	flex: 1 1 180px;
-	min-width: 180px;
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 0;
-}
+/* Styles for .input-group and .input-bk are now scoped under .hero-search-form */
+/* So, global .input-group and .input-bk might still apply elsewhere, or can be removed if only for old form */
 
-.input-group label {
-	font-size: 1rem;
-	font-weight: 500;
-	margin-bottom: 6px;
-	color: #21364b;
-}
-
-.input-bk {
-	border: 1.5px solid #d1d5db;
-	border-radius: 6px;
-	padding: 10px 14px;
-	font-size: 1rem;
-	background: #f9fafb;
-	transition: border 0.2s;
-}
-
-.input-bk:focus {
-	border-color: #2B6CB0;
-	outline: none;
-	background: #fff;
-}
-
+/* Global button style - this will apply to .hero-search-button unless overridden */
+/* .hero-search-button has its own specific background, padding, etc. so it largely overrides this */
 button {
-	background: linear-gradient(90deg, #2B6CB0 0%, #21364b 100%);
-	border-radius: 8px;
+	background: linear-gradient(90deg, var(--primary-soft-blue) 0%, var(--primary-dark-blue) 100%); /* Updated to use CSS vars */
+	border-radius: 8px; /* Keep consistent rounding */
 	color: white;
 	border: none;
 	padding: 14px 28px;
@@ -303,198 +453,219 @@ button:hover {
 }
 
 /* Features Section */
-.features {
-	padding: 4rem 5%;
-	text-align: center;
-	max-width: 1400px;
-	margin: 0 auto;
+section#features { /* Using ID for higher specificity if needed */
+    padding: 3rem 1rem; /* Adjust padding */
+    background-color: var(--white); /* Contrast with hero if hero is light gray */
+    text-align: center;
+}
+
+section#features h2 { /* Section title */
+    font-size: 2.2rem; /* Adjust size */
+    color: var(--primary-dark-blue);
+    margin-bottom: 2.5rem; /* More space below title */
 }
 
 .feature-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 2rem;
-	margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+    gap: 2rem; /* Space between cards */
+    max-width: 1200px; /* Align with nav max-width */
+    margin: 0 auto; /* Center the grid */
 }
 
 .feature-card {
-	padding: 2rem;
-	background: white;
-	border-radius: 10px;
-	box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background-color: var(--white);
+    padding: 2rem 1.5rem; /* Generous padding */
+    border: 1px solid var(--border-color);
+    border-radius: 12px; /* Consistent rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Subtle shadow */
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
 }
 
 .feature-card i {
-	color: #2B6CB0;
-	margin-bottom: 1rem;
+    font-size: 2.5rem; /* Make icons larger */
+    color: var(--primary-soft-blue); /* Use an accent color */
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.35rem; /* Adjust size */
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0; /* Remove default p margin if card padding handles spacing */
 }
 
 /* Footer */
 footer {
-	background: #232f3e;
-	color: #f5f6fa;
-	padding: 0;
-	font-size: 1rem;
+    background-color: var(--primary-dark-blue);
+    color: var(--very-light-gray); /* Light text color for dark background */
+    padding: 3rem 1rem 1rem 1rem; /* Bottom padding less due to bottom-bar */
+    margin-top: 3rem; /* Space above the footer */
 }
 
 .footer-main {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-items: flex-start;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 48px 0 24px 0;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: space-between;
+    gap: 2rem; /* Space between brand/links and between link sections */
+    max-width: 1200px;
+    margin: 0 auto 2rem auto; /* Center and space before bottom bar */
 }
 
 .footer-brand {
-	flex: 1 1 320px;
-	min-width: 320px;
-	margin-right: 40px;
+    flex: 1 1 300px; /* Flex properties */
+    margin-right: 2rem; /* Space to the links section */
 }
 
 .footer-logo-row {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
-.footer-logo {
-	font-size: 2.2rem;
-	color: #ffd600;
+.footer-logo i { /* Updated to target i tag inside .footer-logo based on HTML */
+    font-size: 2rem;
+    color: var(--primary-soft-blue); /* Accent color for logo icon */
+    margin-right: 0.5rem;
 }
 
 .footer-brand-name {
-	font-size: 2rem;
-	font-weight: 700;
-	color: #f5f6fa;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--white);
 }
 
 .footer-desc {
-	color: #cfd8dc;
-	font-size: 1.08rem;
-	margin-bottom: 28px;
-	max-width: 400px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: var(--light-gray-background); /* Slightly less bright than pure white */
 }
 
-.footer-social {
+.footer-social { /* Existing style, preserved structure */
 	display: flex;
-	gap: 24px;
-	margin-top: 8px;
+	gap: 1rem; /* Adjusted gap */
+	margin-top: 1rem; /* Adjusted margin */
 }
 
 .footer-social a {
-	color: #cfd8dc;
-	background: #293447;
-	border-radius: 50%;
-	width: 40px;
-	height: 40px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.3rem;
-	transition: background 0.2s, color 0.2s;
+    color: var(--very-light-gray);
+    margin-right: 0; /* Use gap on parent instead */
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
 }
 
 .footer-social a:hover {
-	background: #ffd600;
-	color: #232f3e;
+    color: var(--primary-soft-blue); /* Accent on hover */
+    text-decoration: none;
 }
 
 .footer-links {
-	display: flex;
-	flex: 2 1 600px;
-	justify-content: space-between;
-	gap: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem; /* Space between footer sections (Company, Support, Legal) */
+    flex: 2 1 600px; /* Allow links area to take more space */
 }
 
 .footer-section {
-	min-width: 160px;
+    flex: 1 1 150px; /* Allow link sections to wrap nicely */
 }
 
 .footer-section h4 {
-	color: #f5f6fa;
-	font-size: 1.1rem;
-	font-weight: 700;
-	margin-bottom: 18px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 1rem;
 }
 
 .footer-section ul {
-	list-style: none;
-	padding: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .footer-section ul li {
-	margin-bottom: 14px;
+    margin-bottom: 0.5rem;
 }
 
-.footer-section a {
-	color: #cfd8dc;
-	text-decoration: none;
-	font-size: 1rem;
-	transition: color 0.2s;
+.footer-section ul a {
+    color: var(--very-light-gray);
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
 }
 
-.footer-section a:hover {
-	color: #ffd600;
+.footer-section ul a:hover {
+    color: var(--primary-soft-blue);
+    text-decoration: none;
 }
 
 .footer-bottom-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-top: 1px solid #374151;
-	padding: 18px 0 12px 0;
-	max-width: 1200px;
-	margin: 0 auto;
-	font-size: 0.98rem;
+    border-top: 1px solid var(--primary-soft-blue); /* Use a slightly lighter shade of the dark blue for the border */
+    padding: 1.5rem 0 1rem 0;
+    /* text-align: center; */ /* Removed for flex layout */
+    font-size: 0.85rem;
+    color: var(--light-gray-background);
+    max-width: 1200px;
+    margin: 0 auto; /* Center content */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
 }
 
-.footer-bottom-left {
-	color: #cfd8dc;
+.footer-bottom-left, .footer-bottom-right {
+    flex: 1 1 auto; /* Allow them to share space */
 }
+.footer-bottom-left { text-align: left; }
+.footer-bottom-right { text-align: right; }
 
-.footer-bottom-right {
-	display: flex;
-	gap: 24px;
-	align-items: center;
-}
-
-.trust-badge {
-	color: #ffd600;
-	font-weight: 600;
-	font-size: 1rem;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.trust-badge i {
-	color: #ffd600;
-	font-size: 1.1rem;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 900px) { /* Preserved existing media query for footer structure */
 	.footer-main {
 		flex-direction: column;
-		gap: 32px;
-		padding: 40px 0 16px 0;
+		gap: 2rem; /* Use consistent gap */
+		/* padding: 40px 0 16px 0; */ /* Padding handled by main footer rule */
 	}
 	.footer-links {
 		flex-direction: column;
-		gap: 32px;
+		gap: 2rem; /* Use consistent gap */
 	}
 	.footer-brand {
-		margin-right: 0;
-		margin-bottom: 24px;
-	}
-	.footer-bottom-bar {
-		flex-direction: column;
-		gap: 10px;
-		padding: 16px 0 8px 0;
+		margin-right: 0; /* Remove right margin when stacked */
+		margin-bottom: 1rem; /* Adjust bottom margin */
 	}
 }
+@media (max-width: 768px) { /* Stack bottom bar on mobile */
+    .footer-bottom-left, .footer-bottom-right {
+        text-align: center;
+        flex-basis: 100%;
+    }
+}
+
+
+.trust-badge { /* Preserved with slight adjustment */
+    margin-left: 0; /* Centered on mobile, rely on gap for desktop */
+    display: inline-flex; /* Ensure badges align well if multiple */
+    align-items: center;
+    /* color, font-weight, font-size already inherited or set by .footer-bottom-bar */
+}
+.trust-badge i { /* Preserved */
+    margin-right: 0.3rem;
+    /* color already inherited or set by .footer-bottom-bar */
+}
+
 
 /* Loading State */
 .loading {
@@ -509,11 +680,13 @@ footer {
 
 /* Hotel Booking Elements */
 #hotels {
-	max-width: 1200px;
+	max-width: 1200px; /* This can stay as it defines the overall width of the results area */
 	margin: 2rem auto;
 	padding: 0 1rem;
 }
 
+/* Commenting out old .card-container and .card styles that might conflict */
+/*
 .card-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(800px, 1fr));
@@ -530,42 +703,139 @@ footer {
 	box-shadow: 0 0 0 1px #0e3f7e0a, 0 1px 1px -0.5px #2a33450a, 0 3px 3px -1.5px #2a33460a,
 		0 6px 6px -3px #2a33460a, 0 6px 8px -6px #0e3f7e0a, 0 4px 4px -12px #0e3f7e0a;
 }
+*/
 
-.card-id {
-	font-size: 20px;
-	font-weight: bold;
+/* New Hotel Result Card Styles */
+#hotels .card-container { /* This class is on the element generated by app.js for each hotel */
+    margin-bottom: 2rem; /* Space between cards */
+    /* Removed grid display from here, each card is now a row */
 }
 
-.card-title {
-	font-size: 32px;
-	font-weight: bold;
-	color: #2286f9;
-	margin-bottom: 40px;
-	margin-top: 0;
+#hotels .card { /* This class is on the element generated by app.js for each hotel */
+    display: flex;
+    flex-direction: row; /* For horizontal layout */
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Slightly adjusted shadow */
+    overflow: hidden;
+    border: 1px solid var(--border-color); /* Subtle border */
+    padding: 0; /* Reset padding, will be handled by inner elements */
+    margin: 0 0 1.5rem 0; /* Adjust margin for spacing between cards */
 }
 
-.card-header {
-	font-size: 20px;
-	font-weight: bold;
-	margin-bottom: 10px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
+#hotels .card .card-image {
+    flex-basis: 220px; /* Fixed width for the image area */
+    flex-shrink: 0;
+    background-color: var(--light-gray-background); /* Placeholder bg */
+    /* Ensure img children fill this */
+    height: auto; /* Let height be determined by content or explicit height of image */
+    min-height: 180px; /* Minimum height for the image area */
 }
 
-.price-btn {
-	font-size: 14px;
-	font-weight: 500;
-	background-color: #2286f9;
-	color: #fff;
-	padding: 10px 12px;
-	border-radius: 4px;
-	border: none;
-	cursor: pointer;
-	text-transform: capitalize;
-	margin-top: 12px;
+#hotels .card .card-image img {
+    width: 100%;
+    height: 100%; /* Make image fill the container height */
+    object-fit: cover; /* Crop image to fit */
+    display: block; /* Remove any extra space below image */
 }
+
+/* Content Area within the card */
+#hotels .card .items-start > .flex-between-end.w-full { /* Target the main content block */
+    flex-grow: 1;
+    padding: 1.25rem; /* More padding */
+    display: flex;
+    flex-direction: row; /* Info block and Price/CTA block side-by-side */
+    justify-content: space-between;
+}
+
+#hotels .card .items-start > .flex-between-end.w-full > div:first-child { /* Info block */
+    flex-grow: 1; /* Allow info block to take available space */
+    padding-right: 1rem; /* Space between info and price block */
+}
+
+
+#hotels .card .card-id { /* This contains "Hotel Name : Actual Name" - adapting to Hotel Name */
+    font-size: 1.25rem; /* Larger for hotel name */
+    font-weight: 600;
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.35rem;
+}
+
+#hotels .card .card-title { /* This is actually the Room/Rate Name */
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+#hotels .card .featues { /* Further details like occupancy, board */
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+#hotels .card .featues span { /* Make values in features stand out a bit */
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+#hotels .card p.red { /* Specific to the refundable tag paragraph */
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0; /* Remove extra margin if it's the last item in its group */
+}
+#hotels .card p.red span { /* The actual text "Refundable" / "Non refundable" */
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background-color: var(--light-gray-background); /* Neutral background */
+    color: var(--text-dark);
+}
+
+/* Price and Button Area */
+#hotels .card .flex-between-end.w-full > p.flex.flex-col { /* Price/button container */
+    margin-top: 0; /* Reset margin, alignment handled by flex parent */
+    align-items: flex-end; /* Align its content (price, button) to the right */
+    /* padding-left: 1rem; */ /* Space from info block, handled by parent's justify-content */
+    flex-shrink: 0; /* Prevent this block from shrinking */
+    text-align: right; /* Ensure text within aligns right */
+}
+
+
+#hotels .card .price-btn {
+    background-color: var(--accent-orange);
+    color: var(--white);
+    padding: 0.65rem 1.3rem; /* Adjusted padding */
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem; /* Slightly larger */
+    font-weight: 600; /* Bolder */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    min-width: 150px; /* Ensure decent width */
+    margin-top: 0.5rem; /* Space between price and button */
+}
+
+#hotels .card .price-btn:hover {
+    background-color: #D35400; /* Darker orange from hero button */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+#hotels .card .price-btn s { /* Styling for the strikethrough original price */
+    font-size: 0.8em;
+    color: var(--light-gray-background); /* Make it less prominent if shown */
+    margin-right: 0.5em;
+    font-weight: normal;
+}
+
+/* Ensure .price is styled if it's separate from button */
+#hotels .card .price {
+    font-size: 1.4rem; /* Prominent price */
+    font-weight: 700;
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.25rem; /* Small space before button */
+}
+
 
 .flex {
 	display: flex;
@@ -647,11 +917,13 @@ footer {
 }
 
 p {
-	color: #4f4f4f;
+	color: #4f4f4f; /* Existing specific p color, will be overridden by new default unless more specific */
+    /* margin-bottom: 1rem; */ /* This is now default, can be removed if this p is not special */
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4 { /* These were specific, now will take from global unless more specific */
 	color: #1d1d1d;
+    /* Default heading styles from above will apply if these are removed or less specific */
 }
 
 .search {
