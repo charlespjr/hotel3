@@ -43,8 +43,16 @@
         async function loadBlogPosts() {
             try {
                 const response = await fetch('/api/blog-posts');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const posts = await response.json();
                 const blogGrid = document.getElementById('blog-grid');
+                
+                if (!posts || posts.length === 0) {
+                    blogGrid.innerHTML = '<p>No blog posts available at the moment. Please check back later.</p>';
+                    return;
+                }
                 
                 posts.forEach(post => {
                     const article = document.createElement('article');
@@ -64,7 +72,7 @@
                             <h2>${title}</h2>
                             <p class="blog-meta">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} • ${Math.floor(Math.random() * 5) + 2} min read</p>
                             <p class="blog-excerpt">Read our comprehensive guide about ${title.toLowerCase()}.</p>
-                            <a href="blog/${post}" class="read-more">Read More</a>
+                            <a href="/blog/${post}" class="read-more">Read More</a>
                         </div>
                     `;
                     
@@ -72,7 +80,12 @@
                 });
             } catch (error) {
                 console.error('Error loading blog posts:', error);
-                document.getElementById('blog-grid').innerHTML = '<p>Error loading blog posts. Please try again later.</p>';
+                document.getElementById('blog-grid').innerHTML = `
+                    <div class="error-message">
+                        <p>Error loading blog posts. Please try again later.</p>
+                        <p class="error-details">${error.message}</p>
+                    </div>
+                `;
             }
         }
 
