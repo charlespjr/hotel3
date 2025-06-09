@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const liteApi = require("liteapi-node-sdk");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 // Load environment variables from .env file
 // Ensure you have a .env file in the root directory with:
 // PROD_API_KEY=your_lite_api_key_here
@@ -563,6 +564,22 @@ app.get("/api/hotel-reviews", async (req, res) => {
         }
         res.status(500).json({ error: "Failed to fetch hotel reviews", details: error.message });
     }
+});
+
+// Blog posts API endpoint
+app.get("/api/blog-posts", (req, res) => {
+  try {
+    const blogDir = path.join(__dirname, '../client/blog');
+    const files = fs.readdirSync(blogDir);
+    const htmlFiles = files.filter(file => file.endsWith('.html'));
+    res.json(htmlFiles);
+  } catch (error) {
+    console.error("Error reading blog posts:", error);
+    res.status(500).json({ 
+      error: "Failed to read blog posts", 
+      details: error.message 
+    });
+  }
 });
 
 // Serve static pretty URLs for footer pages
