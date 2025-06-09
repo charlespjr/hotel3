@@ -1755,10 +1755,25 @@ const blogTopics = [
 ];
 
 async function generateArticle(topic) {
-  const prompt = `Write a comprehensive, SEO-optimized blog post about "${topic.title}". 
-  Include relevant information about ${topic.keywords.join(', ')}. 
-  The article should be well-structured with headings, subheadings, and bullet points where appropriate.
-  Include practical tips and advice. Make it engaging and informative.`;
+  const prompt = `Write a concise, SEO-optimized blog post about "${topic.title}". 
+  Include key information about ${topic.keywords.join(', ')}. 
+  Use clear headings, bullet points, and practical tips.
+  
+  Include these images:
+  1. Featured image at start:
+  <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80" alt="Featured hotel image" class="featured-image">
+  
+  2. Image grid after "Types of Hotels":
+  <div class="image-grid">
+    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80" alt="Luxury hotel room">
+    <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80" alt="Hotel exterior">
+    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80" alt="Hotel amenities">
+  </div>
+  
+  3. Single image before "Tips":
+  <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80" alt="Hotel booking tips">
+  
+  Return only the raw HTML content, no document structure.`;
 
   try {
     const response = await fetch(DEEPSEEK_API_URL, {
@@ -1772,21 +1787,17 @@ async function generateArticle(topic) {
         messages: [
           {
             role: "system",
-            content: "You are a professional travel writer specializing in hotel accommodations and travel tips."
+            content: "You are a professional travel writer. Include the provided image tags exactly as specified. Return only raw HTML content for the blog post body."
           },
           {
             role: "user",
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000
+        temperature: 0.5,
+        max_tokens: 1000
       })
     });
-
-    if (!response.ok) {
-      throw new Error(`DeepSeek API error: ${response.statusText}`);
-    }
 
     const data = await response.json();
     const content = data.choices[0].message.content;
@@ -1798,34 +1809,131 @@ async function generateArticle(topic) {
 }
 
 function generateHTML(topic, content) {
+  // Strip any extraneous HTML document tags from the content
+  let cleanedContent = content.replace(/<!DOCTYPE html>[\s\S]*?<html[^>]*>[\s\S]*?<head>[\s\S]*?<\/head>[\s\S]*?<body[^>]*>([\s\S]*?)<\/body>[\s\S]*?<\/html>/i, '$1');
+  cleanedContent = cleanedContent.replace(/<html[^>]*>|<\/html>|<head>|<\/head>|<body[^>]*>|<\/body>|<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${topic.title} - Hotel Booking Guide</title>
-    <meta name="description" content="Learn everything about ${topic.title.toLowerCase()}. Expert tips and advice for hotel bookings.">
+    <title>${topic.title} - AureaVibe Blog</title>
+    <meta name="description" content="Learn everything about ${topic.title.toLowerCase()}. Expert tips and advice.">
     <meta name="keywords" content="${topic.keywords.join(', ')}">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        .blog-post img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .blog-post .featured-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            margin-bottom: 30px;
+        }
+        .blog-post .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .blog-post .image-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 <body>
     <header>
         <nav>
-            <a href="/">Home</a>
-            <a href="/blog">Blog</a>
+            <a href="/" class="header-logo">
+                <img src="/assets/aureavibe-logo.png" alt="AureaVibe Logo" />
+            </a>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/#search">Search</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+            </ul>
         </nav>
     </header>
-    <main>
-        <article>
-            <h1>${topic.title}</h1>
-            <div class="content">
-                ${content}
-            </div>
-        </article>
+    <main class="page-content">
+        <div class="container">
+            <article class="blog-post">
+                <h1>${topic.title}</h1>
+                <div class="blog-content">
+                    ${cleanedContent}
+                </div>
+            </article>
+        </div>
     </main>
     <footer>
-        <p>&copy; ${new Date().getFullYear()} Hotel Booking Guide. All rights reserved.</p>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <div class="footer-logo-row">
+                    <span class="footer-logo"><i class="fa-solid fa-gem"></i></span>
+                    <span class="footer-brand-name">AureaVibe</span>
+                </div>
+                <p class="footer-desc">Compare hotel rates across multiple platforms to find the best prices. Your trusted partner for discovering premium accommodations worldwide.</p>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/profile.php?id=61577051360915" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/aureavibeapp" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/aureavibe" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="/careers.html">Careers</a></li>
+                        <li><a href="/press.html">Press</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                        <li><a href="/investors.html">Investors</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/help.html">Help Center</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/contact.html">Contact Us</a></li>
+                        <li><a href="/safety.html">Safety Center</a></li>
+                        <li><a href="/cancellation.html">Cancellation Policy</a></li>
+                        <li><a href="/payment.html">Payment Options</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom-bar">
+            <div class="footer-bottom-left">&copy; ${new Date().getFullYear()} AureaVibe. All rights reserved. Your trusted hotel rate comparison platform.</div>
+            <div class="footer-bottom-right">
+                <span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Booking</span>
+                <span class="trust-badge"><i class="fa-solid fa-certificate"></i> Verified Hotels</span>
+            </div>
+        </div>
     </footer>
+    <script src="/js/navigation.js"></script>
 </body>
 </html>`;
 }
@@ -1875,13 +1983,19 @@ async function generateAllArticles() {
     const blogDir = path.join(__dirname, '../client/blog');
     await fs.mkdir(blogDir, { recursive: true });
 
-    // Generate all articles
-    for (const topic of blogTopics) {
-      console.log(`Generating article: ${topic.title}`);
-      const html = await generateArticle(topic);
-      const filePath = path.join(blogDir, `${topic.slug}.html`);
-      await fs.writeFile(filePath, html);
-      console.log(`Saved article: ${topic.slug}.html`);
+    // Process articles in parallel batches of 10
+    const batchSize = 10;
+    for (let i = 0; i < blogTopics.length; i += batchSize) {
+      const batch = blogTopics.slice(i, i + batchSize);
+      console.log(`Processing batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(blogTopics.length/batchSize)}`);
+      
+      await Promise.all(batch.map(async (topic) => {
+        console.log(`Generating article: ${topic.title}`);
+        const html = await generateArticle(topic);
+        const filePath = path.join(blogDir, `${topic.slug}.html`);
+        await fs.writeFile(filePath, html);
+        console.log(`Saved article: ${topic.slug}.html`);
+      }));
     }
 
     // Generate sitemap
@@ -1898,5 +2012,7 @@ async function generateAllArticles() {
 
 module.exports = {
   generateAllArticles,
+  generateArticle,
+  generateHTML, // <-- add this line
   blogTopics
-}; 
+};

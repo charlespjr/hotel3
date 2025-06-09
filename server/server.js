@@ -11,8 +11,14 @@ const fs = require("fs");
 // DEEPSEEK_API_KEY=your_deepseek_api_key_here
 // FRONTEND_URL=http://localhost:your_frontend_port (if applicable for CORS in dev)
 require("dotenv").config();
+console.log("Environment variables loaded:", {
+  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY ? "Present" : "Missing",
+  PROD_API_KEY: process.env.PROD_API_KEY ? "Present" : "Missing",
+  FRONTEND_URL: process.env.FRONTEND_URL || "Not set",
+  BASE_URL: process.env.BASE_URL || "Not set"
+});
 const { sendBookingConfirmation } = require('./email');
-const { generateAllArticles } = require('./blog-generator');
+const { generateAllArticles, generateArticle, blogTopics, generateHTML } = require('./blog-generator');
 const OpenAI = require('openai');
 
 // Initialize DeepSeek OpenAI client
@@ -640,77 +646,15 @@ if (process.env.NODE_ENV !== 'production') {
 // Generate blog posts for hotel locations
 app.post('/api/generate-hotel-locations', async (req, res) => {
     console.log('Starting hotel location blog generation...');
-    
+
     const locations = [
         'New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Houston, TX', 'Phoenix, AZ',
-        'Philadelphia, PA', 'San Antonio, TX', 'San Diego, CA', 'Dallas, TX', 'San Jose, CA',
-        'Austin, TX', 'Jacksonville, FL', 'San Francisco, CA', 'Columbus, OH', 'Indianapolis, IN',
-        'Fort Worth, TX', 'Charlotte, NC', 'Seattle, WA', 'Denver, CO', 'Washington, DC',
-        'Alexandria, VA', 'Fairfax, VA', 'Herndon, VA', 'Rockville, MD', 'Richmond, VA',
-        'Boston, MA', 'Nashville, TN', 'El Paso, TX', 'Detroit, MI', 'Memphis, TN',
-        'Portland, OR', 'Oklahoma City, OK', 'Las Vegas, NV', 'Louisville, KY', 'Baltimore, MD',
-        'Milwaukee, WI', 'Albuquerque, NM', 'Tucson, AZ', 'Fresno, CA', 'Sacramento, CA',
-        'Kansas City, MO', 'Mesa, AZ', 'Atlanta, GA', 'Long Beach, CA', 'Raleigh, NC',
-        'Miami, FL', 'Virginia Beach, VA', 'Omaha, NE', 'Oakland, CA', 'Minneapolis, MN',
-        'Tulsa, OK', 'Arlington, TX', 'Tampa, FL', 'New Orleans, LA', 'Cleveland, OH',
-        'Honolulu, HI', 'Anaheim, CA', 'Lexington, KY', 'Stockton, CA', 'Corpus Christi, TX',
-        'Henderson, NV', 'Riverside, CA', 'Newark, NJ', 'Saint Paul, MN', 'Santa Ana, CA',
-        'Cincinnati, OH', 'Irvine, CA', 'Orlando, FL', 'Pittsburgh, PA', 'St. Louis, MO',
-        'Greensboro, NC', 'Jersey City, NJ', 'Anchorage, AK', 'Lincoln, NE', 'Plano, TX',
-        'Durham, NC', 'Buffalo, NY', 'Chandler, AZ', 'Chula Vista, CA', 'Toledo, OH',
-        'Madison, WI', 'Gilbert, AZ', 'Reno, NV', 'Fort Wayne, IN', 'North Las Vegas, NV',
-        'St. Petersburg, FL', 'Lubbock, TX', 'Irving, TX', 'Laredo, TX', 'Winston-Salem, NC',
-        'Chesapeake, VA', 'Glendale, AZ', 'Garland, TX', 'Scottsdale, AZ', 'Norfolk, VA',
-        'Boise, ID', 'Fremont, CA', 'Spokane, WA', 'Montgomery, AL', 'Yonkers, NY',
-        'Augusta, GA', 'Baton Rouge, LA', 'Des Moines, IA', 'Grand Rapids, MI', 'Salt Lake City, UT',
-        'Birmingham, AL', 'Huntsville, AL', 'Mobile, AL', 'Little Rock, AR', 'Providence, RI',
-        'Sioux Falls, SD', 'Savannah, GA', 'Chattanooga, TN', 'Jackson, MS', 'Fort Lauderdale, FL',
-        'Burlington, VT', 'Fargo, ND', 'Columbia, SC', 'Wilmington, NC', 'Albany, NY',
-        'Hartford, CT', 'Springfield, MO', 'Rochester, NY', 'Tallahassee, FL', 'Asheville, NC',
-        'Knoxville, TN', 'Dayton, OH', 'Syracuse, NY', 'Worcester, MA',
-        'San Juan, PR', 'Ponce, PR', 'Mayaguez, PR', 'Arecibo, PR', 'Caguas, PR',
-        'Fajardo, PR', 'Guaynabo, PR', 'Humacao, PR', 'Bayamon, PR', 'Carolina, PR',
-        'Anchorage, AK', 'Fairbanks, AK', 'Juneau, AK', 'Sitka, AK', 'Kodiak, AK',
-        'Bethel, AK', 'Ketchikan, AK', 'Palmer, AK', 'Kenai, AK', 'Kodiak, AK',
-        'Honolulu, HI', 'Pearl City, HI', 'Hilo, HI', 'Kailua, HI', 'Waipahu, HI',
-        'Mililani Town, HI', 'Kaneohe, HI', 'Ewa Gentry, HI', 'Kihei, HI', 'Makakilo, HI',
-        'Las Vegas, NV', 'Reno, NV', 'Henderson, NV', 'North Las Vegas, NV', 'Sparks, NV',
-        'Carson City, NV', 'Fernley, NV', 'Elko, NV', 'Mesquite, NV', 'Boulder City, NV',
-        'Phoenix, AZ', 'Tucson, AZ', 'Mesa, AZ', 'Scottsdale, AZ', 'Glendale, AZ',
-        'Chandler, AZ', 'Gilbert, AZ', 'Tempe, AZ', 'Peoria, AZ', 'Surprise, AZ',
-        'San Diego, CA', 'Los Angeles, CA', 'San Jose, CA', 'San Francisco, CA', 'Fresno, CA',
-        'Sacramento, CA', 'Long Beach, CA', 'Oakland, CA', 'Anaheim, CA', 'Santa Ana, CA',
-        'Miami, FL', 'Orlando, FL', 'Tampa, FL', 'St. Petersburg, FL', 'Hialeah, FL',
-        'Fort Lauderdale, FL', 'Port St. Lucie, FL', 'Cape Coral, FL', 'Gainesville, FL', 'Palm Bay, FL',
-        'New York, NY', 'Buffalo, NY', 'Rochester, NY', 'Yonkers, NY', 'Syracuse, NY',
-        'Albany, NY', 'New Rochelle, NY', 'Mount Vernon, NY', 'Schenectady, NY', 'Utica, NY',
-        'Chicago, IL', 'Aurora, IL', 'Rockford, IL', 'Joliet, IL', 'Naperville, IL',
-        'Springfield, IL', 'Peoria, IL', 'Elgin, IL', 'Waukegan, IL', 'Champaign, IL',
-        'Houston, TX', 'San Antonio, TX', 'Dallas, TX', 'Austin, TX', 'Fort Worth, TX',
-        'El Paso, TX', 'Arlington, TX', 'Corpus Christi, TX', 'Plano, TX', 'Laredo, TX',
-        'Seattle, WA', 'Spokane, WA', 'Tacoma, WA', 'Vancouver, WA', 'Bellevue, WA',
-        'Kent, WA', 'Everett, WA', 'Renton, WA', 'Yakima, WA', 'Federal Way, WA',
-        'Portland, OR', 'Salem, OR', 'Eugene, OR', 'Gresham, OR', 'Hillsboro, OR',
-        'Beaverton, OR', 'Bend, OR', 'Medford, OR', 'Springfield, OR', 'Corvallis, OR',
-        'Denver, CO', 'Colorado Springs, CO', 'Aurora, CO', 'Fort Collins, CO', 'Lakewood, CO',
-        'Thornton, CO', 'Arvada, CO', 'Westminster, CO', 'Pueblo, CO', 'Boulder, CO',
-        'Minneapolis, MN', 'St. Paul, MN', 'Rochester, MN', 'Duluth, MN', 'Bloomington, MN',
-        'Brooklyn Park, MN', 'Plymouth, MN', 'St. Cloud, MN', 'Eagan, MN', 'Woodbury, MN',
-        'Detroit, MI', 'Grand Rapids, MI', 'Warren, MI', 'Sterling Heights, MI', 'Ann Arbor, MI',
-        'Lansing, MI', 'Flint, MI', 'Dearborn, MI', 'Livonia, MI', 'Westland, MI',
-        'Boston, MA', 'Worcester, MA', 'Springfield, MA', 'Cambridge, MA', 'Lowell, MA',
-        'Brockton, MA', 'New Bedford, MA', 'Quincy, MA', 'Lynn, MA', 'Fall River, MA',
-        'Philadelphia, PA', 'Pittsburgh, PA', 'Allentown, PA', 'Erie, PA', 'Reading, PA',
-        'Scranton, PA', 'Bethlehem, PA', 'Lancaster, PA', 'Harrisburg, PA', 'Altoona, PA',
-        'Baltimore, MD', 'Rockville, MD', 'Germantown, MD', 'Bowie, MD', 'Hagerstown, MD',
-        'Frederick, MD', 'Gaithersburg, MD', 'Bethesda, MD', 'Ellicott City, MD', 'Columbia, MD',
-        'Washington, DC', 'Arlington, VA', 'Alexandria, VA', 'Fairfax, VA', 'Richmond, VA',
-        'Virginia Beach, VA', 'Norfolk, VA', 'Chesapeake, VA', 'Newport News, VA', 'Hampton, VA'
+        // ... existing locations ...
     ];
 
     try {
-        // Process cities in chunks of 5 for parallel processing
-        const chunkSize = 5;
+        // Process cities in chunks of 10 for parallel processing
+        const chunkSize = 10;
         for (let i = 0; i < locations.length; i += chunkSize) {
             const chunk = locations.slice(i, i + chunkSize);
             console.log(`Processing chunk ${i/chunkSize + 1} of ${Math.ceil(locations.length/chunkSize)}`);
@@ -718,127 +662,32 @@ app.post('/api/generate-hotel-locations', async (req, res) => {
             await Promise.all(chunk.map(async (location) => {
                 console.log(`Generating article for: Hotels near ${location}`);
                 
-                const prompt = `Write a comprehensive blog post about hotels in ${location}. Include information about:
-1. Popular hotel districts and neighborhoods
-2. Average hotel prices and seasonal variations
-3. Types of hotels available (luxury, budget, boutique, etc.)
-4. Nearby attractions and points of interest
-5. Transportation options and accessibility
+                const prompt = `Write a concise blog post about hotels in ${location}. Include:
+1. Popular hotel districts
+2. Average prices
+3. Types of hotels
+4. Nearby attractions
+5. Transportation options
 6. Best times to visit
-7. Special considerations for travelers
-8. Tips for finding the best deals
-9. Local amenities and services
-10. Safety and security information
+7. Tips for finding deals
 
-Format the content in HTML with proper headings, paragraphs, and lists.`;
+Format in HTML with headings and lists.`;
 
                 const response = await openaiClient.chat.completions.create({
                     model: "deepseek-chat",
                     messages: [{ role: "user", content: prompt }],
-                    temperature: 0.7,
-                    max_tokens: 2000
+                    temperature: 0.5,
+                    max_tokens: 1000
                 });
 
                 const content = response.choices[0].message.content;
                 const fileName = `hotels-near-${location.toLowerCase().replace(/,?\s+/g, '-')}.html`;
                 
-                const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotels Near ${location} - Complete Guide</title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="/" class="header-logo">
-                <img src="/assets/aureavibe-logo.png" alt="AureaVibe Logo" />
-            </a>
-            <button class="mobile-menu-btn" aria-label="Toggle menu">
-                <i class="fas fa-bars"></i>
-            </button>
-            <ul class="nav-links">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/#search">Search</a></li>
-                <li><a href="/#features">Features</a></li>
-                <li><a href="/about.html">About</a></li>
-                <li><a href="/contact.html">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main class="page-content">
-        <div class="container">
-            <article class="blog-post">
-                <h1>Hotels Near ${location}: Complete Guide</h1>
-                <div class="blog-content">
-                    ${content}
-                </div>
-            </article>
-        </div>
-    </main>
-    <footer>
-        <div class="footer-main">
-            <div class="footer-brand">
-                <div class="footer-logo-row">
-                    <span class="footer-logo"><i class="fa-solid fa-gem"></i></span>
-                    <span class="footer-brand-name">AureaVibe</span>
-                </div>
-                <p class="footer-desc">Compare hotel rates across multiple platforms to find the best prices. Your trusted partner for discovering premium accommodations worldwide.</p>
-                <div class="footer-social">
-                    <a href="https://www.facebook.com/profile.php?id=61577051360915" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/aureavibeapp" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.linkedin.com/company/aureavibe" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="footer-links">
-                <div class="footer-section">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="/about.html">About Us</a></li>
-                        <li><a href="/careers.html">Careers</a></li>
-                        <li><a href="/press.html">Press</a></li>
-                        <li><a href="/blog.html">Blog</a></li>
-                        <li><a href="/investors.html">Investors</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="/help.html">Help Center</a></li>
-                        <li><a href="/faq.html">FAQ</a></li>
-                        <li><a href="/contact.html">Contact Us</a></li>
-                        <li><a href="/safety.html">Safety Center</a></li>
-                        <li><a href="/cancellation.html">Cancellation Policy</a></li>
-                        <li><a href="/payment.html">Payment Options</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="/privacy.html">Privacy Policy</a></li>
-                        <li><a href="/terms.html">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom-bar">
-            <div class="footer-bottom-left">&copy; 2025 AureaVibe. All rights reserved. Your trusted hotel rate comparison platform.</div>
-            <div class="footer-bottom-right">
-                <span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Booking</span>
-                <span class="trust-badge"><i class="fa-solid fa-certificate"></i> Verified Hotels</span>
-            </div>
-        </div>
-    </footer>
-    <script src="/js/navigation.js"></script>
-</body>
-</html>`;
+                const htmlContent = generateHTML({
+                    title: `Hotels Near ${location}`,
+                    slug: `hotels-near-${location.toLowerCase().replace(/,?\s+/g, '-')}`,
+                    keywords: ['hotels', location, 'travel']
+                }, content);
 
                 fs.writeFileSync(path.join(__dirname, '../client/blog', fileName), htmlContent);
                 console.log(`Saved article: ${fileName}`);
