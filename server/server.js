@@ -750,14 +750,93 @@ Format the content in HTML with proper headings, paragraphs, and lists.`;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotels Near ${location} - Complete Guide</title>
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="blog-post">
-        <h1>Hotels Near ${location}: Complete Guide</h1>
-        <div class="blog-content">
-            ${content}
+    <header>
+        <nav>
+            <a href="/" class="header-logo">
+                <img src="/assets/aureavibe-logo.png" alt="AureaVibe Logo" />
+            </a>
+            <button class="mobile-menu-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/#search">Search</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="page-content">
+        <div class="container">
+            <article class="blog-post">
+                <h1>Hotels Near ${location}: Complete Guide</h1>
+                <div class="blog-content">
+                    ${content}
+                </div>
+            </article>
         </div>
-    </div>
+    </main>
+    <footer>
+        <div class="footer-main">
+            <div class="footer-brand">
+                <div class="footer-logo-row">
+                    <span class="footer-logo"><i class="fa-solid fa-gem"></i></span>
+                    <span class="footer-brand-name">AureaVibe</span>
+                </div>
+                <p class="footer-desc">Compare hotel rates across multiple platforms to find the best prices. Your trusted partner for discovering premium accommodations worldwide.</p>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/profile.php?id=61577051360915" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/aureavibeapp" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/aureavibe" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="/careers.html">Careers</a></li>
+                        <li><a href="/press.html">Press</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                        <li><a href="/investors.html">Investors</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/help.html">Help Center</a></li>
+                        <li><a href="/faq.html">FAQ</a></li>
+                        <li><a href="/contact.html">Contact Us</a></li>
+                        <li><a href="/safety.html">Safety Center</a></li>
+                        <li><a href="/cancellation.html">Cancellation Policy</a></li>
+                        <li><a href="/payment.html">Payment Options</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom-bar">
+            <div class="footer-bottom-left">&copy; 2025 AureaVibe. All rights reserved. Your trusted hotel rate comparison platform.</div>
+            <div class="footer-bottom-right">
+                <span class="trust-badge"><i class="fa-solid fa-shield-halved"></i> Secure Booking</span>
+                <span class="trust-badge"><i class="fa-solid fa-certificate"></i> Verified Hotels</span>
+            </div>
+        </div>
+    </footer>
+    <script src="/js/navigation.js"></script>
 </body>
 </html>`;
 
