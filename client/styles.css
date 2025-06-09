@@ -1,5 +1,3 @@
-/* Commented out first redesign :root */
-/*
 :root {
     --primary-dark-blue: #2C3E50; 
     --primary-soft-blue: #3498DB; 
@@ -16,7 +14,6 @@
     --success-green: #28A745;
     --danger-red: #DC3545;
 }
-*/
 
 /* Reset and base styles */
 *,
@@ -512,10 +509,9 @@ section#features h2 {
     line-height: 1.6;
     margin-bottom: 0; 
 }
-*/
 
-/* Footer - Commented out for revert */
-/*
+
+/* Footer styles start here */
 footer {
     background-color: var(--primary-dark-blue);
     color: var(--very-light-gray); 
