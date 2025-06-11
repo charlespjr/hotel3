@@ -91,89 +91,131 @@ async function searchHotelRate() {
  * @param {object} hotelInfo - The hotel details object from the API.
  */
 function displayHotelDetails(hotelInfo) {
-    const hotelsDiv = document.getElementById("hotels"); // This is where the main card goes
-    hotelsDiv.innerHTML = ''; // Clear previous content if any
+    const hotelsDiv = document.getElementById("hotels");
+    hotelsDiv.innerHTML = '';
 
-    const mainImage = hotelInfo.hotelImages && hotelInfo.hotelImages.find(image => image.defaultImage === true)?.url
-                      || (hotelInfo.hotelImages && hotelInfo.hotelImages?.[0]?.url)
-                      || 'https://via.placeholder.com/300x200.png?text=No+Image'; // Fallback image
+    // Create a photo gallery container
+    const galleryContainer = document.createElement('div');
+    galleryContainer.className = 'hotel-gallery-container';
+    
+    // Get all available images
+    const images = hotelInfo.hotelImages || [];
+    const mainImage = images.find(image => image.defaultImage === true)?.url || 
+                     (images.length > 0 ? images[0].url : 'https://via.placeholder.com/800x400.png?text=No+Image');
 
-    let hotelElementHTML = `
-      <div class='card-container'>
-        <div class='card'>
-          <div class='flex items-start'>
-            <div class='card-image'>
-              <img src='${mainImage}' alt='${hotelInfo.name || 'Hotel image'}'>
-            </div>
-            <div class='flex-between-end w-full'>
-              <div>
-                <h4 class='card-title'>${hotelInfo.name || 'N/A'}</h4>
-                <p class='features'>${hotelInfo.hotelDescription || 'No description available.'}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    // Create main image display
+    const mainImageContainer = document.createElement('div');
+    mainImageContainer.className = 'hotel-main-image';
+    mainImageContainer.innerHTML = `
+        <img src="${mainImage}" alt="${hotelInfo.name || 'Hotel image'}" class="main-photo">
     `;
-    hotelsDiv.innerHTML = hotelElementHTML; // Set the basic card structure
+    galleryContainer.appendChild(mainImageContainer);
 
-    // Populate additional details placeholders
-    const starRatingSpan = document.getElementById('hotel-star-rating');
-    const overallRatingSpan = document.getElementById('hotel-overall-rating');
-    const reviewCountSpan = document.getElementById('hotel-review-count');
-    const addressDisplaySpan = document.getElementById('hotel-address-display');
-    const mapLink = document.getElementById('hotel-map-link');
-    const facilitiesListUl = document.getElementById('hotel-facilities-list');
-    const imageGalleryDiv = document.getElementById('hotel-image-gallery');
-
-    if (starRatingSpan) starRatingSpan.textContent = hotelInfo.starRating || 'N/A';
-    if (overallRatingSpan) overallRatingSpan.textContent = hotelInfo.rating || 'N/A'; // Assuming hotelInfo.rating is overall rating
-    if (reviewCountSpan) reviewCountSpan.textContent = hotelInfo.reviewCount || '0';
-    if (addressDisplaySpan) addressDisplaySpan.textContent = hotelInfo.address || 'N/A';
-
-    if (hotelInfo.location && hotelInfo.location.latitude && hotelInfo.location.longitude) {
-        if (mapLink) {
-            mapLink.href = `https://www.google.com/maps?q=${hotelInfo.location.latitude},${hotelInfo.location.longitude}`;
-            mapLink.style.display = 'inline';
-        }
-    } else {
-        if (mapLink) mapLink.style.display = 'none';
-    }
-
-    // Display Image Gallery
-    if (imageGalleryDiv && hotelInfo.hotelImages && Array.isArray(hotelInfo.hotelImages)) {
-        imageGalleryDiv.innerHTML = ''; // Clear previous images
-        hotelInfo.hotelImages.slice(0, 5).forEach(img => { // Show up to 5 images
-            const imgElement = document.createElement('img');
-            imgElement.src = img.url;
-            imgElement.alt = img.caption || hotelInfo.name || 'Hotel Image';
-            // Basic styling for gallery, can be enhanced in CSS
-            imgElement.style.width = '100px';
-            imgElement.style.height = 'auto';
-            imgElement.style.margin = '5px';
-            imgElement.style.border = '1px solid #ddd';
-            imgElement.style.padding = '2px';
-            imageGalleryDiv.appendChild(imgElement);
+    // Create thumbnail gallery
+    if (images.length > 0) {
+        const thumbnailContainer = document.createElement('div');
+        thumbnailContainer.className = 'hotel-thumbnails';
+        images.slice(0, 8).forEach(img => {
+            const thumb = document.createElement('div');
+            thumb.className = 'thumbnail';
+            // Use thumbnailUrl for thumbnails if available, otherwise fallback to full url
+            const thumbSrc = img.thumbnailUrl || img.url;
+            thumb.innerHTML = `<img src="${thumbSrc}" alt="${img.caption || 'Hotel image'}" onclick="updateMainImage('${img.url}')">`;
+            thumbnailContainer.appendChild(thumb);
         });
-    } else if (imageGalleryDiv) {
-        imageGalleryDiv.innerHTML = '<p>No additional images available.</p>';
+        galleryContainer.appendChild(thumbnailContainer);
     }
 
-    // Display Facilities
-    if (facilitiesListUl) {
-        facilitiesListUl.innerHTML = ''; // Clear previous facilities
-        const facilitiesArray = hotelInfo.facilities || hotelInfo.hotelFacilities; // hotelFacilities might be the correct field
-        if (facilitiesArray && Array.isArray(facilitiesArray) && facilitiesArray.length > 0) {
-            facilitiesArray.slice(0, 15).forEach(facility => { // Show up to 15 facilities
-                const li = document.createElement('li');
-                li.textContent = typeof facility === 'object' ? facility.name : facility;
-                facilitiesListUl.appendChild(li);
-            });
-        } else {
-            const li = document.createElement('li');
-            li.textContent = 'No facilities information available.';
-            facilitiesListUl.appendChild(li);
-        }
+    // Create detailed information container
+    const detailsContainer = document.createElement('div');
+    detailsContainer.className = 'hotel-details-info';
+    detailsContainer.innerHTML = `
+        <div class="hotel-header">
+            <h2>${hotelInfo.name || 'N/A'}</h2>
+            <div class="hotel-rating">
+                <span class="stars">${'★'.repeat(hotelInfo.starRating || 0)}${'☆'.repeat(5 - (hotelInfo.starRating || 0))}</span>
+                <span class="rating">${hotelInfo.rating || 'N/A'}</span>
+                <span class="reviews">(${hotelInfo.reviewCount || 0} reviews)</span>
+            </div>
+        </div>
+        
+        <div class="hotel-location">
+            <h3>Location</h3>
+            <p>${hotelInfo.address || ''}${hotelInfo.city ? `, ${hotelInfo.city}` : ''}${hotelInfo.country ? `, ${hotelInfo.country}` : ''}</p>
+            ${hotelInfo.location?.latitude && hotelInfo.location?.longitude ? 
+                `<a href="https://www.google.com/maps?q=${hotelInfo.location.latitude},${hotelInfo.location.longitude}" target="_blank" class="map-link">View on Map</a>` : ''}
+        </div>
+
+        <div class="hotel-description">
+            <h3>About the Hotel</h3>
+            <p>${hotelInfo.hotelDescription || hotelInfo.description || 'No description available.'}</p>
+        </div>
+
+        ${hotelInfo.hotelImportantInformation ? `
+            <div class="hotel-important-information">
+                <h3>Important Information</h3>
+                <p>${hotelInfo.hotelImportantInformation}</p>
+            </div>
+        ` : ''}
+
+        ${hotelInfo.checkinCheckoutTimes ? `
+            <div class="hotel-checkin-checkout">
+                <h3>Check-in & Check-out</h3>
+                <p><strong>Check-in:</strong> ${hotelInfo.checkinCheckoutTimes.checkin || 'N/A'}</p>
+                <p><strong>Check-out:</strong> ${hotelInfo.checkinCheckoutTimes.checkout || 'N/A'}</p>
+            </div>
+        ` : ''}
+
+        <div class="hotel-facilities">
+            <h3>Facilities & Services</h3>
+            <div class="facilities-grid">
+                ${(hotelInfo.facilities || hotelInfo.hotelFacilities || []).map(facility => `
+                    <div class="facility-item">
+                        <span class="facility-icon">✓</span>
+                        <span class="facility-name">${typeof facility === 'object' ? facility.name : facility}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        ${hotelInfo.amenities ? `
+            <div class="hotel-amenities">
+                <h3>Amenities</h3>
+                <div class="facilities-grid">
+                    ${hotelInfo.amenities.map(amenity => `
+                        <div class="facility-item">
+                            <span class="facility-icon">✓</span>
+                            <span class="facility-name">${amenity}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : ''}
+
+        ${hotelInfo.policies ? `
+            <div class="hotel-policies">
+                <h3>Hotel Policies</h3>
+                <div class="policies-content">
+                    ${Object.entries(hotelInfo.policies).map(([key, value]) => `
+                        <div class="policy-item">
+                            <strong>${key}:</strong> ${value}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : ''}
+    `;
+
+    // Add all containers to the main div
+    hotelsDiv.appendChild(galleryContainer);
+    hotelsDiv.appendChild(detailsContainer);
+}
+
+// Add this function to handle thumbnail clicks
+function updateMainImage(imageUrl) {
+    const mainPhoto = document.querySelector('.main-photo');
+    if (mainPhoto) {
+        mainPhoto.src = imageUrl;
     }
 }
 
@@ -207,12 +249,12 @@ function displayRates(rateInfo) {
                 rateDiv.appendChild(refundableTag);
 
                 const originalRate = document.createElement('p');
-                originalRate.textContent = `Public Rate: $${rate.originalRate}`;
+                originalRate.textContent = `Public Rate: $${rate.originalRate} ${rate.currency || 'USD'}`;
                 originalRate.style.textDecoration = "line-through";
                 rateDiv.appendChild(originalRate);
 
                 const retailRate = document.createElement('p');
-                retailRate.textContent = `Promotional rate: $${rate.retailRate}`;
+                retailRate.textContent = `Promotional rate: $${rate.retailRate} ${rate.currency || 'USD'}`;
                 rateDiv.appendChild(retailRate);
 
                 const bookButton = document.createElement('button');

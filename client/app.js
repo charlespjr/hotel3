@@ -1,7 +1,8 @@
 // Initialize the SDK with your API key
+const API_KEY = 'test-api-key-123'; // This should match what's expected by the server
 
 // Get the base URL for API calls
-const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
 
 async function searchHotels() {
 	document.getElementById("loader").style.display = "block";
@@ -17,12 +18,24 @@ async function searchHotels() {
 	const city = document.getElementById("city").value;
 	const countryCode = document.getElementById("countryCode").value;
 
+	// Validate country and city
+	if (!countryCode || !city) {
+		hotelsDiv.innerHTML = "<p class='error'>Please select both country and city.</p>";
+		document.getElementById("loader").style.display = "none";
+		return;
+	}
+
 	console.log("Search parameters:", { checkin, checkout, adults, city, countryCode });
 
 	try {
 		// Make a request to your backend server
 		const response = await fetch(
-			`${API_URL}/api/search-hotels?checkin=${checkin}&checkout=${checkout}&adults=${adults}&city=${city}&countryCode=${countryCode}`
+			`${API_URL}/api/data/hotels?country=${countryCode}&city=${city}`,
+			{
+				headers: {
+					'X-API-Key': API_KEY
+				}
+			}
 		);
 		
 		if (!response.ok) {
@@ -30,16 +43,46 @@ async function searchHotels() {
 			throw new Error(errorData.error || 'Failed to fetch hotels');
 		}
 
-		const data = await response.json();
-		console.log("Received data:", data);
+		const hotels = await response.json();
+		console.log("Received data:", hotels);
 
-		if (!data.rates || data.rates.length === 0) {
+		if (!hotels || hotels.length === 0) {
 			hotelsDiv.innerHTML = "<p>No hotels found for the given criteria.</p>";
 			document.getElementById("loader").style.display = "none";
 			return;
 		}
 
-		displayRatesAndHotels(data.rates);
+		// Get rates for each hotel
+		const ratesPromises = hotels.map(async (hotel) => {
+			const ratesResponse = await fetch(`${API_URL}/api/hotels/rates`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-API-Key': API_KEY
+				},
+				body: JSON.stringify({
+					hotelId: hotel.id,
+					checkin,
+					checkout,
+					currency: 'USD',
+					adults: parseInt(adults),
+					children: 0
+				})
+			});
+			
+			if (!ratesResponse.ok) {
+				throw new Error('Failed to fetch rates');
+			}
+			
+			const rateData = await ratesResponse.json();
+			return {
+				hotel,
+				...rateData
+			};
+		});
+
+		const rates = await Promise.all(ratesPromises);
+		displayRatesAndHotels(rates);
 	} catch (error) {
 		console.error("Error fetching hotels:", error);
 		hotelsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -52,12 +95,8 @@ function displayRatesAndHotels(rates) {
 	const hotelsDiv = document.getElementById("hotels");
 
 	rates.forEach((rate) => {
-		const minRate = rate.roomTypes.reduce((min, current) => {
-			const minAmount = min.rates[0].retailRate.total[0].amount;
-			const currentAmount = current.rates[0].retailRate.total[0].amount;
-			return minAmount < currentAmount ? min : current;
-		});
-		console.log();
+		const hotel = rate.hotel;
+		const room = rate.rooms[0]; // Get the first room rate
 
 		const hotelElement = document.createElement("div");
 		hotelElement.innerHTML = `
@@ -66,37 +105,30 @@ function displayRatesAndHotels(rates) {
 			<div class='flex items-start'>
 				<div class='card-image'>
 					<img
-						src='${rate.hotel.main_photo}'
+						src='${hotel.hotelImages[0]?.url || 'https://via.placeholder.com/300x200'}'
 						alt='hotel'
 					/>
 				</div>
 				<div class='flex-between-end w-full'>
 					<div>
-						<h4 class='card-title'>${minRate.rates[0].name}</h4>
-						<h3 class='card-id'>Hotel Name : ${rate.hotel.name}</h3>
+						<h3 class='card-title'>${hotel.name}</h3>
+						<p class='hotel-address'>Address: ${hotel.address || 'N/A'}, ${hotel.city || 'N/A'}, ${hotel.country || 'N/A'}</p>
+						<p class='hotel-description'>Description: ${hotel.hotelDescription || 'No description available.'}</p>
 						<p class='featues'>
-							Max Occupancy ∙ <span>${minRate.rates[0].maxOccupancy}</span> Adult Count
-							∙ <span>${minRate.rates[0].adultCount}</span> Child Count ∙
-							<span>${minRate.rates[0].childCount}</span>
-							Board Type ∙ <span>${minRate.rates[0].boardType}</span> Board Name ∙
-							<span> ${minRate.rates[0].boardName}</span>
+							Facilities: ${hotel.hotelFacilities.join(', ')}
 						</p>
+						<h4 class='card-id'>Room Type: ${room.roomName}</h4>
 						<p class='red flex items-center'>
 							<span>
-								${minRate.rates[0].cancellationPolicies.refundableTag == "NRFN"
-				? "Non refundable"
-				: "Refundable"
-			}
+								${room.cancellationPolicy}
 							</span>
 						</p>
 					</div>
 					<p class='flex flex-col mb-0'>
-    					<span class=${minRate.rates[0].retailRate.total[0].amount}></span>
-   						<span class=${minRate.rates[0].retailRate.suggestedSellingPrice[0].amount}></span>
-   						<button class='price-btn' onclick="proceedToBooking('${minRate.offerId}', '${rate.hotel.id}')">
-       						 <s>${minRate.rates[0].retailRate.suggestedSellingPrice[0].amount} ${minRate.rates[0].retailRate.suggestedSellingPrice[0].currency}</s>
-        					BOOK NOW ${minRate.rates[0].retailRate.total[0].amount} ${minRate.rates[0].retailRate.total[0].currency}
-    					</button>
+						<button class='price-btn' onclick="proceedToBooking('${room.roomId}', '${hotel.id}')">
+							${room.price} ${room.currency}
+							BOOK NOW 
+						</button>
 					</p>
 				</div>
 			</div>
@@ -117,59 +149,73 @@ async function proceedToBooking(rateId, hotelId) {
 	hotelsDiv.innerHTML = "";
 	loader.style.display = "block";
 
-	// Fetch hotel details
 	try {
-		const hotelDetailsResponse = await fetch(`${API_URL}/api/search-rates?hotelId=${hotelId}&checkin=${document.getElementById("checkin").value}&checkout=${document.getElementById("checkout").value}&adults=${document.getElementById("adults").value}`);
-		if (!hotelDetailsResponse.ok) {
-			const errorData = await hotelDetailsResponse.json();
-			throw new Error(errorData.error || 'Failed to fetch hotel details');
+		// Create prebook session
+		const prebookResponse = await fetch(`${API_URL}/api/rates/prebook`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-API-Key': API_KEY
+			},
+			body: JSON.stringify({
+				rateId,
+				voucherCode: document.getElementById("voucher")?.value
+			})
+		});
+
+		if (!prebookResponse.ok) {
+			const errorData = await prebookResponse.json();
+			throw new Error(errorData.error || 'Failed to create prebook session');
 		}
-		const hotelData = await hotelDetailsResponse.json();
-		console.log("Hotel details:", hotelData);
 
-		displayHotelDetails(hotelData.hotelInfo, hotelData.rateInfo);
+		const prebookData = await prebookResponse.json();
+		console.log("Prebook successful!", prebookData.success.data);
 
-		// Create and append the form dynamically
+		// Display payment info
+		const paymentData = {
+			currency: prebookData.success.data.currency,
+			price: prebookData.success.data.price,
+			voucherTotalAmount: prebookData.success.data.voucherTotalAmount
+		};
+		displayPaymentInfo(paymentData);
+
+		// Create and append the booking form
 		const formHtml = `
-    <div class="booking-form-container">
-      <h2>Complete Your Booking</h2>
-      <form id="bookingForm" class="booking-form">
-        <div class="form-section">
-          <div class="form-section-title">
-            <i class="fas fa-user"></i> Guest Information
-          </div>
-          <label>
-            First Name
-            <input type="text" name="guestFirstName" required placeholder="Enter your first name">
-          </label>
-          <label>
-            Last Name
-            <input type="text" name="guestLastName" required placeholder="Enter your last name">
-          </label>
-          <label>
-            Email Address
-            <input type="email" name="guestEmail" required placeholder="Enter your email">
-          </label>
-        </div>
+			<div class="booking-form-container">
+				<h2>Complete Your Booking</h2>
+				<form id="bookingForm" class="booking-form">
+					<div class="form-section">
+						<div class="form-section-title">
+							<i class="fas fa-user"></i> Guest Information
+						</div>
+						<label>
+							First Name
+							<input type="text" name="guestFirstName" required placeholder="Enter your first name">
+						</label>
+						<label>
+							Last Name
+							<input type="text" name="guestLastName" required placeholder="Enter your last name">
+						</label>
+						<label>
+							Email Address
+							<input type="email" name="guestEmail" required placeholder="Enter your email">
+						</label>
+					</div>
 
-        <div class="form-section">
-          <div class="form-section-title">
-            <i class="fas fa-credit-card"></i> Payment Details
-          </div>
-          <label>
-            Cardholder Name
-            <input type="text" name="holderName" required placeholder="Name on card">
-          </label>
-          <label>
-            Voucher Code (Optional)
-            <input type="text" name="voucher" placeholder="Enter voucher code if you have one">
-          </label>
-        </div>
+					<div class="form-section">
+						<div class="form-section-title">
+							<i class="fas fa-credit-card"></i> Payment Details
+						</div>
+						<label>
+							Cardholder Name
+							<input type="text" name="holderName" required placeholder="Name on card">
+						</label>
+					</div>
 
-        <input type="submit" value="Proceed to Payment">
-      </form>
-    </div>
-  `;
+					<input type="submit" value="Complete Booking">
+				</form>
+			</div>
+		`;
 		hotelsDiv.insertAdjacentHTML('beforeend', formHtml);
 		loader.style.display = "none";
 
@@ -179,59 +225,54 @@ async function proceedToBooking(rateId, hotelId) {
 			loader.style.display = "block";
 
 			const formData = new FormData(event.target);
-			const guestFirstName = formData.get('guestFirstName');
-			const guestLastName = formData.get('guestLastName');
-			const guestEmail = formData.get('guestEmail');
-			const holderName = formData.get('holderName');
-			const voucher = formData.get('voucher');
+			const guestInfo = {
+				firstName: formData.get('guestFirstName'),
+				lastName: formData.get('guestLastName'),
+				email: formData.get('guestEmail'),
+				holderName: formData.get('holderName')
+			};
 
 			try {
-				// Include additional guest details in the payment processing request
-				const bodyData = {
-					rateId
-				};
-
-				// Add voucher if it exists
-				if (voucher) {
-					bodyData.voucherCode = voucher;
-				}
-				console.log(bodyData);
-
-				const prebookResponse = await fetch(`${API_URL}/api/prebook`, {
-					method: "POST",
+				// Complete the booking
+				const bookingResponse = await fetch(`${API_URL}/api/rates/book`, {
+					method: 'POST',
 					headers: {
-						"Content-Type": "application/json",
+						'Content-Type': 'application/json',
+						'X-API-Key': API_KEY
 					},
-					body: JSON.stringify(bodyData),
+					body: JSON.stringify({
+						transactionId: prebookData.success.data.transactionId,
+						guestInfo
+					})
 				});
 
-				const prebookData = await prebookResponse.json();
-				console.log("preboook successful!", prebookData.success.data);
-				const paymentData = {
-					currency: prebookData.success.data.currency,
-					price: prebookData.success.data.price,
-					voucherTotalAmount: prebookData.success.data.voucherTotalAmount
-				};
-				displayPaymentInfo(paymentData);
+				if (!bookingResponse.ok) {
+					const errorData = await bookingResponse.json();
+					throw new Error(errorData.error || 'Failed to complete booking');
+				}
 
-				initializePaymentForm(
-					prebookData.success.data.secretKey,
-					prebookData.success.data.prebookId,
-					prebookData.success.data.transactionId,
-					guestFirstName,
-					guestLastName,
-					guestEmail
-				);
+				const bookingData = await bookingResponse.json();
+				console.log("Booking successful!", bookingData.success.data);
+
+				// Display success message
+				hotelsDiv.innerHTML = `
+					<div class="success-message">
+						<h2>Booking Confirmed!</h2>
+						<p>Your booking ID is: ${bookingData.success.data.bookingId}</p>
+						<p>Status: ${bookingData.success.data.status}</p>
+						<p>Total Amount: ${bookingData.success.data.totalAmount} ${bookingData.success.data.currency}</p>
+					</div>
+				`;
 			} catch (error) {
-				console.error("Error in payment processing or booking:", error);
+				console.error("Error completing booking:", error);
+				hotelsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
 			} finally {
 				loader.style.display = "none";
 			}
 		});
 	} catch (error) {
-		console.error("Error fetching hotel details:", error);
+		console.error("Error in booking process:", error);
 		hotelsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-	} finally {
 		loader.style.display = "none";
 	}
 }
